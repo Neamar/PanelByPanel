@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
@@ -25,11 +24,7 @@ public class PanelImageView extends TouchImageView {
     }
 
     public void goToPanel(Rect panel) {
-        float zoomLevelX = (float) getWidth() / panel.width();
-        float zoomLevelY = (float) getHeight() / panel.height();
-        float zoomLevel = Math.min(zoomLevelX, zoomLevelY);
-        Log.e("WTF", "X:" + zoomLevelX + " Y:" + zoomLevelY);
-        PanelZoom panelZoom = new PanelZoom(zoomLevel, panel.exactCenterX(), panel.exactCenterY(), false);
+        PanelZoom panelZoom = new PanelZoom(panel);
         compatPostOnAnimation(panelZoom);
     }
 
@@ -44,13 +39,17 @@ public class PanelImageView extends TouchImageView {
         private PointF startTouch;
         private PointF endTouch;
 
-        PanelZoom(float targetZoom, float focusX, float focusY, boolean stretchImageToSuper) {
+        PanelZoom(Rect panel) {
+            float zoomLevelX = (float) getWidth() / panel.width();
+            float zoomLevelY = (float) getHeight() / panel.height();
+            float targetZoom = Math.min(zoomLevelX, zoomLevelY);
+
             setState(State.ANIMATE_ZOOM);
             startTime = System.currentTimeMillis();
             this.startZoom = normalizedScale;
             this.targetZoom = targetZoom;
-            this.stretchImageToSuper = stretchImageToSuper;
-            PointF bitmapPoint = new PointF(focusX, focusY);
+            this.stretchImageToSuper = false;
+            PointF bitmapPoint = new PointF(panel.centerX(), panel.centerY());
             this.bitmapX = bitmapPoint.x;
             this.bitmapY = bitmapPoint.y;
 
