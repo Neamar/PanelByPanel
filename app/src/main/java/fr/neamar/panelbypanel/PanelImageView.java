@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
@@ -44,6 +45,7 @@ public class PanelImageView extends TouchImageView {
             float zoomLevelY = (float) getHeight() / panel.height();
             float targetZoom = Math.min(zoomLevelX, zoomLevelY);
 
+            Log.e("WTF", "Zoom:" + targetZoom);
             setState(State.ANIMATE_ZOOM);
             startTime = System.currentTimeMillis();
             this.startZoom = normalizedScale;
