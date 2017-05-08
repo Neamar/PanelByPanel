@@ -19,14 +19,12 @@ public class PanelActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panel);
 
-        final Rect panel = new Rect(417, 441, 688, 841);
-        final Rect panel2 = new Rect(577, 853, 1185, 1258);
         final int[] current = {0};
         final PanelImageView panelImageView = (PanelImageView) findViewById(R.id.page);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample);
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
-        final ArrayList<Rect> panels = panelAnalyzer.getPanelByRows();
+        final ArrayList<Rect> panels = panelAnalyzer.getPanels();
 
         panelImageView.setOnClickListener(new View.OnClickListener() {
             @Override
