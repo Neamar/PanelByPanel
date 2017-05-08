@@ -25,7 +25,11 @@ public class PanelImageView extends TouchImageView {
     }
 
     public void goToPanel(Rect panel) {
-        PanelZoom panelZoom = new PanelZoom(3, panel.exactCenterX(), panel.exactCenterY(), false);
+        float zoomLevelX = (float) getWidth() / panel.width();
+        float zoomLevelY = (float) getHeight() / panel.height();
+        float zoomLevel = Math.min(zoomLevelX, zoomLevelY);
+        Log.e("WTF", "X:" + zoomLevelX + " Y:" + zoomLevelY);
+        PanelZoom panelZoom = new PanelZoom(zoomLevel, panel.exactCenterX(), panel.exactCenterY(), false);
         compatPostOnAnimation(panelZoom);
     }
 
@@ -54,7 +58,6 @@ public class PanelImageView extends TouchImageView {
             // Used for translating image during scaling
             //
             startTouch = transformCoordBitmapToTouch(bitmapX, bitmapY);
-            Log.e("WTF", startTouch.toString());
             endTouch = new PointF(viewWidth / 2, viewHeight / 2);
         }
 
