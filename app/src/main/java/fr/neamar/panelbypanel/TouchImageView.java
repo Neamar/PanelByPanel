@@ -52,16 +52,17 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
     // Scale of image ranges from minScale to maxScale, where minScale == 1
     // when the image is stretched to fit view.
     //
-    private float normalizedScale;
+    protected float normalizedScale;
 
     //
     // Matrix applied to image. MSCALE_X and MSCALE_Y should always be equal.
     // MTRANS_X and MTRANS_Y are the other values used. prevMatrix is the matrix
     // saved prior to the screen rotating.
     //
-    private Matrix matrix, prevMatrix;
+    protected Matrix matrix;
+    private Matrix prevMatrix;
 
-    private static enum State {NONE, DRAG, ZOOM, FLING, ANIMATE_ZOOM}
+    protected static enum State {NONE, DRAG, ZOOM, FLING, ANIMATE_ZOOM}
 
     ;
     private State state;
@@ -85,7 +86,10 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
     //
     // Size of view and previous view size (ie before rotation)
     //
-    private int viewWidth, viewHeight, prevViewWidth, prevViewHeight;
+    protected int viewWidth;
+    protected int viewHeight;
+    private int prevViewWidth;
+    private int prevViewHeight;
 
     //
     // Size of image when it is stretched to fit view. Before and After rotation.
@@ -475,7 +479,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
      * be centered incorrectly within the view. fixScaleTrans first calls fixTrans() and
      * then makes sure the image is centered correctly within the view.
      */
-    private void fixScaleTrans() {
+    protected void fixScaleTrans() {
         fixTrans();
         matrix.getValues(m);
         if (getImageWidth() < viewWidth) {
@@ -728,7 +732,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
         }
     }
 
-    private void setState(State state) {
+    protected void setState(State state) {
         this.state = state;
     }
 
@@ -797,6 +801,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
             }
             if (state == State.NONE) {
                 float targetZoom = (normalizedScale == minScale) ? maxScale : minScale;
+                Log.e("WTF", "TZ" + targetZoom + " X:" + e.getX() + " Y:" + e.getY());
                 DoubleTapZoom doubleTap = new DoubleTapZoom(targetZoom, e.getX(), e.getY(), false);
                 compatPostOnAnimation(doubleTap);
                 consumed = true;
@@ -934,7 +939,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
         }
     }
 
-    private void scaleImage(double deltaScale, float focusX, float focusY, boolean stretchImageToSuper) {
+    protected void scaleImage(double deltaScale, float focusX, float focusY, boolean stretchImageToSuper) {
 
         float lowerScale, upperScale;
         if (stretchImageToSuper) {
@@ -966,7 +971,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
      *
      * @author Ortiz
      */
-    private class DoubleTapZoom implements Runnable {
+    protected class DoubleTapZoom implements Runnable {
 
         private long startTime;
         private static final float ZOOM_TIME = 500;
@@ -1074,7 +1079,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
      *                     to the bounds of the bitmap size.
      * @return Coordinates of the point touched, in the coordinate system of the original drawable.
      */
-    private PointF transformCoordTouchToBitmap(float x, float y, boolean clipToBitmap) {
+    protected PointF transformCoordTouchToBitmap(float x, float y, boolean clipToBitmap) {
         matrix.getValues(m);
         float origW = getDrawable().getIntrinsicWidth();
         float origH = getDrawable().getIntrinsicHeight();
@@ -1099,7 +1104,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
      * @param by y-coordinate in original bitmap coordinate system
      * @return Coordinates of the point in the view's coordinate system.
      */
-    private PointF transformCoordBitmapToTouch(float bx, float by) {
+    protected PointF transformCoordBitmapToTouch(float bx, float by) {
         matrix.getValues(m);
         float origW = getDrawable().getIntrinsicWidth();
         float origH = getDrawable().getIntrinsicHeight();
@@ -1259,7 +1264,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void compatPostOnAnimation(Runnable runnable) {
+    protected void compatPostOnAnimation(Runnable runnable) {
         if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
             postOnAnimation(runnable);
 
