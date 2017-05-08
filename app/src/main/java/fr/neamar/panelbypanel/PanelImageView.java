@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
@@ -45,7 +46,7 @@ public class PanelImageView extends TouchImageView {
             this.startZoom = normalizedScale;
             this.targetZoom = targetZoom;
             this.stretchImageToSuper = stretchImageToSuper;
-            PointF bitmapPoint = transformCoordTouchToBitmap(focusX, focusY, false);
+            PointF bitmapPoint = new PointF(focusX, focusY);
             this.bitmapX = bitmapPoint.x;
             this.bitmapY = bitmapPoint.y;
 
@@ -53,6 +54,7 @@ public class PanelImageView extends TouchImageView {
             // Used for translating image during scaling
             //
             startTouch = transformCoordBitmapToTouch(bitmapX, bitmapY);
+            Log.e("WTF", startTouch.toString());
             endTouch = new PointF(viewWidth / 2, viewHeight / 2);
         }
 
