@@ -1,4 +1,4 @@
-package fr.neamar.panelbypanel;
+package fr.neamar.panelbypanel.panel;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -18,7 +18,8 @@ public class PanelAnalyzer {
         this.bitmap = bitmap;
     }
 
-    public ArrayList<Rect> getPanelsByRows() {
+    // Horizontal gutter detection
+    public ArrayList<Rect> getTiers() {
         ArrayList<Rect> rowPanels = new ArrayList<>();
 
         int baseColor = bitmap.getPixel(0, 0);
@@ -66,8 +67,9 @@ public class PanelAnalyzer {
         return rowPanels;
     }
 
+    // Vertical gutter detection
     public ArrayList<Rect> getPanels() {
-        ArrayList<Rect> rowPanels = getPanelsByRows();
+        ArrayList<Rect> tiers = getTiers();
         ArrayList<Rect> panels = new ArrayList<>();
 
         int baseColor = bitmap.getPixel(0, 0);
@@ -75,7 +77,7 @@ public class PanelAnalyzer {
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
 
-        for (Rect rowPanel : rowPanels) {
+        for (Rect rowPanel : tiers) {
             Point panelStart = null;
             int height = rowPanel.height();
             for (int x = rowPanel.left; x < rowPanel.right - 1; x++) {
@@ -105,7 +107,7 @@ public class PanelAnalyzer {
                         // We have a white line, stop the panel here
                         Rect rect = new Rect(panelStart.x, panelStart.y, x, rowPanel.bottom);
                         panels.add(rect);
-                        Log.e("WTF", "Adding panel at " + rect.toString());
+                        Log.i(TAG, "Adding panel at " + rect.toString());
                         panelStart = null;
                     }
                 } else if (!fullyWhite && panelStart == null) {
