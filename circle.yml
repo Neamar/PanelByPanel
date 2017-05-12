@@ -1,0 +1,25 @@
+machine:
+  java:
+    version: openjdk8
+  environment:
+    GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs=-Xmx2048M
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter tools,extra-android-m2repository,extra-android-support,extra-google-google_play_services,extra-google-m2repository,android-25
+    - echo y | android update sdk --no-ui --all --filter build-tools-25.0.0
+    # Start the gradle daemon
+    - ./gradlew:
+        background: true
+test:
+  pre:
+    # start the emulator
+    - emulator -avd circleci-android22 -no-audio -no-window:
+        background: true
+        parallel: true
+  override:
+    - fb-adb start-server:
+        background: true
+    - ./gradlew test assembleDebug assembleDebugAndroidTest --console=plain
+    # wait for the emulator to have booted
+    - circle-android wait-for-boot
+    - ./gradlew connectedAndroidTest --console=plain
