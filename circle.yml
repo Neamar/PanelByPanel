@@ -11,9 +11,6 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter extra-google-google_play_services
     - echo y | android update sdk --no-ui --all --filter extra-google-m2repository,android-25
     - echo y | android update sdk --no-ui --all --filter build-tools-25.0.0
-    # Start the gradle daemon
-    - ./gradlew:
-        background: true
 test:
   pre:
     # start the emulator
