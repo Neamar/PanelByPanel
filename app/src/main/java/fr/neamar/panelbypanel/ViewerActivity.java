@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
 
-public class PanelActivity extends AppCompatActivity {
+public class ViewerActivity extends AppCompatActivity {
 
-    private static final String TAG = "PanelActivity";
+    private static final String TAG = "ViewerActivity";
     private int currentPanelNumber = 0;
     private ArrayList<Rect> panels;
     private PanelImageView panelImageView;
@@ -23,7 +23,7 @@ public class PanelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_panel);
+        setContentView(R.layout.activity_viewer);
 
         panelImageView = (PanelImageView) findViewById(R.id.page);
 
