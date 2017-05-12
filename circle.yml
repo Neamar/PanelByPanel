@@ -5,7 +5,11 @@ machine:
     GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs=-Xmx2048M
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter tools,extra-android-m2repository,extra-android-support,extra-google-google_play_services,extra-google-m2repository,android-25
+    - echo y | android update sdk --no-ui --all --filter tools
+    - echo y | android update sdk --no-ui --all --filter extra-android-m2repository
+    - echo y | android update sdk --no-ui --all --filter extra-android-support
+    - echo y | android update sdk --no-ui --all --filter extra-google-google_play_services
+    - echo y | android update sdk --no-ui --all --filter extra-google-m2repository,android-25
     - echo y | android update sdk --no-ui --all --filter build-tools-25.0.0
     # Start the gradle daemon
     - ./gradlew:
