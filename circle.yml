@@ -24,3 +24,8 @@ test:
     # wait for the emulator to have booted
     - circle-android wait-for-boot
     - ./gradlew connectedAndroidTest --console=plain
+  post:
+    - cp -r app/build/outputs $CIRCLE_ARTIFACTS
+    # copy the test results to the test results directory.
+    - find app/build/test-results -name "*.xml" -exec cp {} $CIRCLE_TEST_REPORTS/ \;
+    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
