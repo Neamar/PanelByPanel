@@ -1,0 +1,31 @@
+machine:
+  java:
+    version: openjdk8
+  environment:
+    GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs=-Xmx2048M
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter tools
+    - echo y | android update sdk --no-ui --all --filter extra-android-m2repository
+    - echo y | android update sdk --no-ui --all --filter extra-android-support
+    - echo y | android update sdk --no-ui --all --filter extra-google-google_play_services
+    - echo y | android update sdk --no-ui --all --filter extra-google-m2repository,android-25
+    - echo y | android update sdk --no-ui --all --filter build-tools-25.0.0
+test:
+  pre:
+    # start the emulator
+    - emulator -avd circleci-android22 -no-audio -no-window:
+        background: true
+        parallel: true
+  override:
+    - fb-adb start-server:
+        background: true
+    - ./gradlew test assembleDebug assembleDebugAndroidTest --console=plain
+    # wait for the emulator to have booted
+    - circle-android wait-for-boot
+    - ./gradlew connectedAndroidTest --console=plain
+  post:
+    - cp -r app/build/outputs $CIRCLE_ARTIFACTS
+    # copy the test results to the test results directory.
+    - find app/build/test-results -name "*.xml" -exec cp {} $CIRCLE_TEST_REPORTS/ \;
+    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
