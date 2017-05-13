@@ -16,7 +16,8 @@ import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -68,11 +69,10 @@ public class PanelAnalyzerTest {
 
             assertEquals("Invalid panel count in tier " + (i + 1) + " for " + drawableName, expectedPanelsByTier[i], tier.size());
         }
-
     }
 
     @Test
     public void computeCorrectPanels() throws Exception {
-        testResource("panel_1", fr.neamar.panelbypanel.test.R.drawable.panel_1, new int[]{2, 3, 2, 2});
+        testResource("panel_1", fr.neamar.panelbypanel.test.R.drawable.panel_1, new int[]{3, 3, 2, 2});
     }
 }

@@ -20,8 +20,22 @@ public class PanelAnalyzer {
     };
 
     private Bitmap bitmap;
+    // How close on each RGB component a color has to be to be considered "background color"
     private static final int SIMILARITY_THRESHOLD = 20;
-    private static final int MIN_PANEL_HEIGHT = 30;
+
+    // Minimum height (px) for a tier
+    private static final int MIN_TIER_HEIGHT = 30;
+
+    // Minimum width (px) for a panel
+    private static final int MIN_PANEL_WIDTH = 30;
+
+    // Percentage of pixels that can be different from background color before we assume the line is not "background color".
+    // Useful for bad scans (stains, ...), footnotes or art effects between tiers / panels
+    private static final float TIER_NOT_EMPTY_TOLERANCE = 0.05f;
+
+    // Percentage of pixels that can be different from background color before we assume the line is not "background color".
+    // Useful for bad scans (stains, ...), footnotes or art effects between tiers / panels
+    private static final float PANEL_NOT_EMPTY_TOLERANCE = 0.1f;
 
     public PanelAnalyzer(Bitmap bitmap) {
         this.bitmap = bitmap;
@@ -40,7 +54,7 @@ public class PanelAnalyzer {
         int width = bitmap.getWidth();
         for (int y = 0; y < bitmap.getHeight(); y++) {
             // Number of non-background color pixel we'll allow
-            int baseTolerance = Math.round(width * 0.05f);
+            int baseTolerance = Math.round(width * TIER_NOT_EMPTY_TOLERANCE);
             int x = 0;
             while (x < width) {
                 int currentColor = bitmap.getPixel(x, y);
@@ -61,7 +75,7 @@ public class PanelAnalyzer {
             }
             boolean fullyWhite = baseTolerance > 0;
             if (fullyWhite && tierStart != null) {
-                if (y - tierStart.y > MIN_PANEL_HEIGHT) {
+                if (y - tierStart.y > MIN_TIER_HEIGHT) {
                     // We have a white line, stop the panel here
                     rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y + 1));
                     Log.i(TAG, "Adding row panel from " + tierStart.y + " to " + y);
@@ -105,7 +119,7 @@ public class PanelAnalyzer {
             int height = rowPanel.height();
             for (int x = rowPanel.left; x < rowPanel.right - 1; x++) {
                 // Number of non-background color pixel we'll allow
-                int baseTolerance = Math.round(height * 0.05f);
+                int baseTolerance = Math.round(height * PANEL_NOT_EMPTY_TOLERANCE);
                 int y = rowPanel.top;
                 while (y < rowPanel.bottom) {
                     int currentColor = bitmap.getPixel(x, y);
@@ -126,7 +140,7 @@ public class PanelAnalyzer {
                 }
                 boolean fullyWhite = baseTolerance > 0;
                 if (fullyWhite && panelStart != null) {
-                    if (x - panelStart.x > MIN_PANEL_HEIGHT) {
+                    if (x - panelStart.x > MIN_PANEL_WIDTH) {
                         // We have a white line, stop the panel here
                         Rect rect = new Rect(panelStart.x, panelStart.y, x, rowPanel.bottom);
                         panels.add(rect);
