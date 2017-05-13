@@ -801,7 +801,6 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
             }
             if (state == State.NONE) {
                 float targetZoom = (normalizedScale == minScale) ? maxScale : minScale;
-                Log.e("WTF", "TZ" + targetZoom + " X:" + e.getX() + " Y:" + e.getY());
                 DoubleTapZoom doubleTap = new DoubleTapZoom(targetZoom, e.getX(), e.getY(), false);
                 compatPostOnAnimation(doubleTap);
                 consumed = true;

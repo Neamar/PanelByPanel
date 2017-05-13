@@ -21,6 +21,11 @@ public class PanelAnalyzer {
             Color.rgb(0, 0, 255),
     };
 
+    // Orange-ish
+    private static final int DEBUG_BACKGROUND_HORIZONTAL = Color.rgb(255, 128, 0);
+    // Purple-ish
+    private static final int DEBUG_BACKGROUND_VERTICAL = Color.rgb(255, 0, 128);
+
     // How close on each RGB component a color has to be to be considered "background color"
     private static final int SIMILARITY_THRESHOLD = 20;
 
@@ -81,8 +86,8 @@ public class PanelAnalyzer {
 
         Integer maxValue = 0;
         Integer bestMatch = 0;
-        for(Integer i: counter.keySet()) {
-            if(counter.get(i) > maxValue) {
+        for (Integer i : counter.keySet()) {
+            if (counter.get(i) > maxValue) {
                 maxValue = counter.get(i);
                 bestMatch = i;
             }
@@ -92,7 +97,7 @@ public class PanelAnalyzer {
     }
 
     // Horizontal gutter detection
-    public ArrayList<Rect> getTiers() {
+    public ArrayList<Rect> getTiers(Boolean debug) {
         ArrayList<Rect> rowPanels = new ArrayList<>();
 
         int baseColor = getBaseColor();
@@ -127,6 +132,8 @@ public class PanelAnalyzer {
                         if (baseToleranceCount <= 0) {
                             break;
                         }
+                    } else if (debug) {
+                        bitmap.setPixel(x, y, DEBUG_BACKGROUND_HORIZONTAL);
                     }
                     x++;
                 }
@@ -135,7 +142,6 @@ public class PanelAnalyzer {
             boolean fullyWhite = baseToleranceCount > 0;
 
             if (fullyWhite && tierStart != null) {
-                // Log.e(TAG, "Fully white at " + y);
                 if (y - tierStart.y > minTierHeight) {
                     // We have a white line, stop the panel here
                     rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y));
@@ -169,7 +175,7 @@ public class PanelAnalyzer {
             debugPaint.setStyle(Paint.Style.STROKE);
         }
 
-        ArrayList<Rect> tiers = getTiers();
+        ArrayList<Rect> tiers = getTiers(debug);
         ArrayList<Rect> panels = new ArrayList<>();
 
         int baseColor = getBaseColor();
@@ -204,6 +210,9 @@ public class PanelAnalyzer {
                             if (baseToleranceCount <= 0) {
                                 break;
                             }
+
+                        } else if (debug) {
+                            bitmap.setPixel(x, y, DEBUG_BACKGROUND_VERTICAL);
                         }
                         y++;
                     }
