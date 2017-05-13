@@ -49,46 +49,56 @@ public class PanelAnalyzer {
         int br = (baseColor >> 16) & 0xff;
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
+        Log.v(TAG, "Base color:" + baseColor + " (r:" + br + ", g:" + bg + ", b:" + bb + ")");
 
         int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
         int minTierHeight = (int) (bitmap.getHeight() * MIN_TIER_HEIGHT);
         int baseTolerance = (int) (width * TIER_NOT_EMPTY_TOLERANCE);
 
         Point tierStart = null;
-        for (int y = 0; y < bitmap.getHeight(); y++) {
+        for (int y = 0; y <= height; y++) {
             // Number of non-background color pixel we'll allow
             int baseToleranceCount = baseTolerance;
-            int x = 0;
-            while (x < width) {
-                int currentColor = bitmap.getPixel(x, y);
-                int r = (currentColor >> 16) & 0xff;
-                int g = (currentColor >> 8) & 0xff;
-                int b = (currentColor) & 0xff;
 
-                int dr = br - r;
-                int dg = bg - g;
-                int db = bb - b;
-                if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
-                    baseToleranceCount--;
-                    if (baseToleranceCount <= 0) {
-                        break;
+            // For-loop extends beyond bitmap boundary, to add an artificial whiteline at the end.
+            if (y < height) {
+                int x = 0;
+                while (x < width) {
+                    int currentColor = bitmap.getPixel(x, y);
+                    int r = (currentColor >> 16) & 0xff;
+                    int g = (currentColor >> 8) & 0xff;
+                    int b = (currentColor) & 0xff;
+
+                    int dr = br - r;
+                    int dg = bg - g;
+                    int db = bb - b;
+                    if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
+                        baseToleranceCount--;
+                        if (baseToleranceCount <= 0) {
+                            break;
+                        }
                     }
+                    x++;
                 }
-                x++;
             }
+
             boolean fullyWhite = baseToleranceCount > 0;
             if (fullyWhite && tierStart != null) {
+                // Log.e(TAG, "Fully white at " + y);
                 if (y - tierStart.y > minTierHeight) {
                     // We have a white line, stop the panel here
-                    rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y + 1));
-                    Log.i(TAG, "Adding row panel from " + tierStart.y + " to " + y);
+                    rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y));
+                    Log.i(TAG, "Adding tier from " + tierStart.y + " to " + y);
                     tierStart = null;
                 }
             } else if (!fullyWhite && tierStart == null) {
                 // We have the start of a new panel
-                tierStart = new Point(0, y - 1);
+                tierStart = new Point(0, y);
             }
         }
+
+        Log.e(TAG, rowPanels.toString());
 
         return rowPanels;
     }
@@ -123,28 +133,38 @@ public class PanelAnalyzer {
             int height = rowPanel.height();
             int minPanelWidth = (int) (rowPanel.width() * MIN_PANEL_WIDTH);
             int baseTolerance = (int) (height * PANEL_NOT_EMPTY_TOLERANCE);
-            for (int x = rowPanel.left; x < rowPanel.right - 1; x++) {
+            for (int x = rowPanel.left; x <= rowPanel.right; x++) {
                 // Number of non-background color pixel we'll allow
                 int baseToleranceCount = baseTolerance;
-                int y = rowPanel.top;
-                while (y < rowPanel.bottom) {
-                    int currentColor = bitmap.getPixel(x, y);
-                    int r = (currentColor >> 16) & 0xff;
-                    int g = (currentColor >> 8) & 0xff;
-                    int b = (currentColor) & 0xff;
 
-                    int dr = br - r;
-                    int dg = bg - g;
-                    int db = bb - b;
-                    if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
-                        baseToleranceCount--;
-                        if (baseToleranceCount <= 0) {
-                            break;
+                // For-loop extends beyond bitmap boundary, to add an artificial whiteline at the end.
+                if (x < rowPanel.right) {
+                    int y = rowPanel.top;
+                    while (y < rowPanel.bottom) {
+                        int currentColor = bitmap.getPixel(x, y);
+                        int r = (currentColor >> 16) & 0xff;
+                        int g = (currentColor >> 8) & 0xff;
+                        int b = (currentColor) & 0xff;
+
+                        int dr = br - r;
+                        int dg = bg - g;
+                        int db = bb - b;
+                        if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
+                            baseToleranceCount--;
+                            if (baseToleranceCount <= 0) {
+                                break;
+                            }
                         }
+                        y++;
                     }
-                    y++;
                 }
+
                 boolean fullyWhite = baseToleranceCount > 0;
+
+                if (fullyWhite) {
+                    Log.e("WTF", "Panel white at " + x);
+                }
+
                 if (fullyWhite && panelStart != null) {
                     if (x - panelStart.x > minPanelWidth) {
                         // We have a white line, stop the panel here
@@ -164,7 +184,6 @@ public class PanelAnalyzer {
                 }
             }
         }
-
 
         return panels;
     }
