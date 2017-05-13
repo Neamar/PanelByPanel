@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -28,16 +28,20 @@ public class PanelAnalyzerTest {
     public static final String TAG = "PanelAnalyzerTest";
 
     /**
-     * Test t hat an image is correctly analyzed
+     * Test that an image is correctly analyzed
      *
      * @param drawable             the drawable to analyzed
      * @param expectedPanelsByTier the expected panel distribution -- for instance 3,2,1 for an image with a first panel comprising 3 tiers, the second panel being made up of 2 and the last being a single tier.
      */
     private void testResource(String drawableName, @DrawableRes int drawable, int[] expectedPanelsByTier) {
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        // getContext() => get a context for the test app, with the test drawables
+        // getTargetContext() => get a context for the real app, with the actual drawable that'll be shipped.
+        Context appContext = InstrumentationRegistry.getContext();
         Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), drawable);
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
         ArrayList<Rect> panels = panelAnalyzer.getPanels();
+
+        assertFalse("No panels detected for " + drawableName, panels.isEmpty());
 
         ArrayList<ArrayList<Rect>> tiers = new ArrayList<>();
         ArrayList<Rect> currentTier = new ArrayList<>();
@@ -69,6 +73,6 @@ public class PanelAnalyzerTest {
 
     @Test
     public void computeCorrectPanels() throws Exception {
-        testResource("sample", R.drawable.sample, new int[]{2, 3, 2, 2});
+        testResource("panel_1", fr.neamar.panelbypanel.test.R.drawable.panel_1, new int[]{2, 3, 2, 2});
     }
 }
