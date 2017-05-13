@@ -1,6 +1,9 @@
 package fr.neamar.panelbypanel.panel;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -69,6 +72,20 @@ public class PanelAnalyzer {
 
     // Vertical gutter detection
     public ArrayList<Rect> getPanels() {
+        return getPanels(false);
+    }
+
+    public ArrayList<Rect> getPanels(boolean debug) {
+        Canvas debugCanvas = null;
+        Paint debugPaint = null;
+        if(debug) {
+            debugCanvas = new Canvas(bitmap);
+            debugPaint = new Paint();
+            debugPaint.setColor(Color.rgb(255, 0, 0));
+            debugPaint.setStrokeWidth(4);
+            debugPaint.setStyle(Paint.Style.STROKE);
+        }
+
         ArrayList<Rect> tiers = getTiers();
         ArrayList<Rect> panels = new ArrayList<>();
 
@@ -109,6 +126,10 @@ public class PanelAnalyzer {
                         panels.add(rect);
                         Log.i(TAG, "Adding panel at " + rect.toString());
                         panelStart = null;
+
+                        if(debug) {
+                            debugCanvas.drawRect(rect, debugPaint);
+                        }
                     }
                 } else if (!fullyWhite && panelStart == null) {
                     // We have the start of a new panel
@@ -116,6 +137,7 @@ public class PanelAnalyzer {
                 }
             }
         }
+
 
         return panels;
     }

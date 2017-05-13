@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
 
 public class ViewerActivity extends AppCompatActivity {
+    private static final boolean DEBUG = true;
 
     private static final String TAG = "ViewerActivity";
     private int currentPanelNumber = 0;
@@ -27,10 +28,14 @@ public class ViewerActivity extends AppCompatActivity {
 
         panelImageView = (PanelImageView) findViewById(R.id.page);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample);
-        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
-        panels = panelAnalyzer.getPanels();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inMutable = DEBUG;
 
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample, options);
+        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
+        panels = panelAnalyzer.getPanels(true);
+
+        panelImageView.setImageBitmap(bitmap);
         panelImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
