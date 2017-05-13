@@ -9,6 +9,8 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class PanelAnalyzer {
@@ -19,7 +21,6 @@ public class PanelAnalyzer {
             Color.rgb(0, 0, 255),
     };
 
-    private Bitmap bitmap;
     // How close on each RGB component a color has to be to be considered "background color"
     private static final int SIMILARITY_THRESHOLD = 20;
 
@@ -37,23 +38,70 @@ public class PanelAnalyzer {
     // Useful for bad scans (stains, ...), footnotes or art effects between tiers / panels
     private static final float PANEL_NOT_EMPTY_TOLERANCE = 0.1f;
 
+    // Bitmap to use for computations
+    private Bitmap bitmap;
+
+    private int width;
+    private int height;
+
     public PanelAnalyzer(Bitmap bitmap) {
         this.bitmap = bitmap;
+        this.width = bitmap.getWidth();
+        this.height = bitmap.getHeight();
+    }
+
+    private void addColorsAround(int x, int y, int spread, ArrayList<Integer> colors) {
+        for (int i = x - spread; i < x + spread; i++) {
+            for (int j = y - spread; j < y + spread; j++) {
+                if (i >= 0 && i < width && j >= 0 && j < height) {
+                    colors.add(bitmap.getPixel(i, j));
+                }
+            }
+        }
+    }
+
+    private int getBaseColor() {
+        ArrayList<Integer> samples = new ArrayList<Integer>();
+
+        // Sample colors in the four corners
+        addColorsAround(0, 0, 5, samples);
+        addColorsAround(width, 0, 5, samples);
+        addColorsAround(0, height, 5, samples);
+        addColorsAround(width, height, 5, samples);
+
+        // Find the most common colors
+        Map<Integer, Integer> counter = new HashMap<>();
+        for (Integer i : samples) {
+            if (!counter.containsKey(i)) {
+                counter.put(i, 1);
+            } else {
+                counter.put(i, counter.get(i) + 1);
+            }
+        }
+
+        Integer maxValue = 0;
+        Integer bestMatch = 0;
+        for(Integer i: counter.keySet()) {
+            if(counter.get(i) > maxValue) {
+                maxValue = counter.get(i);
+                bestMatch = i;
+            }
+        }
+
+        return bestMatch;
     }
 
     // Horizontal gutter detection
     public ArrayList<Rect> getTiers() {
         ArrayList<Rect> rowPanels = new ArrayList<>();
 
-        int baseColor = bitmap.getPixel(0, 0);
+        int baseColor = getBaseColor();
         int br = (baseColor >> 16) & 0xff;
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
         Log.v(TAG, "Base color:" + baseColor + " (r:" + br + ", g:" + bg + ", b:" + bb + ")");
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int minTierHeight = (int) (bitmap.getHeight() * MIN_TIER_HEIGHT);
+        int minTierHeight = (int) (height * MIN_TIER_HEIGHT);
         int baseTolerance = (int) (width * TIER_NOT_EMPTY_TOLERANCE);
 
         Point tierStart = null;
@@ -122,7 +170,7 @@ public class PanelAnalyzer {
         ArrayList<Rect> tiers = getTiers();
         ArrayList<Rect> panels = new ArrayList<>();
 
-        int baseColor = bitmap.getPixel(0, 0);
+        int baseColor = getBaseColor();
         int br = (baseColor >> 16) & 0xff;
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;

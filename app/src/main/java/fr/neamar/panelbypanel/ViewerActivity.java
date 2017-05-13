@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -37,12 +36,6 @@ public class ViewerActivity extends AppCompatActivity {
         panels = panelAnalyzer.getPanels(true);
 
         panelImageView.setImageBitmap(bitmap);
-
-        if (panels.isEmpty()) {
-            Toast.makeText(this, "Unable to detect panels :(", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         panelImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

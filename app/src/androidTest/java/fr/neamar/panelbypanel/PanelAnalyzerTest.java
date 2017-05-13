@@ -82,4 +82,9 @@ public class PanelAnalyzerTest {
     public void eiichirOdaTest() throws Exception {
         testResource("eiichiro_oda_one_piece", fr.neamar.panelbypanel.test.R.drawable.eiichiro_oda_one_piece, new int[]{2, 1, 2});
     }
+
+    @Test
+    public void sanctuaireTest() throws Exception {
+        testResource("dorison_bec_sanctuaire", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire, new int[]{3, 2, 3});
+    }
 }
