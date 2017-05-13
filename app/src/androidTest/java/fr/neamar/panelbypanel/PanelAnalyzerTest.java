@@ -90,6 +90,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void sanctuaireTest() throws Exception {
-        testResource("dorison_bec_sanctuaire", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire, new int[]{3, 2, 3});
+        // testResource("dorison_bec_sanctuaire_vol_1", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_1, new int[]{3, 3, 1});
+        testResource("dorison_bec_sanctuaire_vol_2", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_2, new int[]{3, 2, 3});
     }
 }

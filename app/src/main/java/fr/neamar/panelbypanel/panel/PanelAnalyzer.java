@@ -118,6 +118,7 @@ public class PanelAnalyzer {
                     int g = (currentColor >> 8) & 0xff;
                     int b = (currentColor) & 0xff;
 
+                    // Square delta for fast absolute value
                     int dr = br - r;
                     int dg = bg - g;
                     int db = bb - b;
@@ -132,6 +133,7 @@ public class PanelAnalyzer {
             }
 
             boolean fullyWhite = baseToleranceCount > 0;
+
             if (fullyWhite && tierStart != null) {
                 // Log.e(TAG, "Fully white at " + y);
                 if (y - tierStart.y > minTierHeight) {
@@ -208,10 +210,6 @@ public class PanelAnalyzer {
                 }
 
                 boolean fullyWhite = baseToleranceCount > 0;
-
-                if (fullyWhite) {
-                    Log.e("WTF", "Panel white at " + x);
-                }
 
                 if (fullyWhite && panelStart != null) {
                     if (x - panelStart.x > minPanelWidth) {
