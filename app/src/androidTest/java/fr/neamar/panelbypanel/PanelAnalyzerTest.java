@@ -38,7 +38,12 @@ public class PanelAnalyzerTest {
         // getContext() => get a context for the test app, with the test drawables
         // getTargetContext() => get a context for the real app, with the actual drawable that'll be shipped.
         Context appContext = InstrumentationRegistry.getContext();
-        Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), drawable);
+
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
+        Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), drawable, options);
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
         ArrayList<Rect> panels = panelAnalyzer.getPanels();
 
