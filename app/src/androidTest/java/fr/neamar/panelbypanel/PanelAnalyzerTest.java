@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.support.annotation.DrawableRes;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,13 +25,15 @@ import static junit.framework.Assert.assertEquals;
  */
 @RunWith(AndroidJUnit4.class)
 public class PanelAnalyzerTest {
+    public static final String TAG = "PanelAnalyzerTest";
+
     /**
      * Test t hat an image is correctly analyzed
      *
      * @param drawable             the drawable to analyzed
      * @param expectedPanelsByTier the expected panel distribution -- for instance 3,2,1 for an image with a first panel comprising 3 tiers, the second panel being made up of 2 and the last being a single tier.
      */
-    private void testResource(@DrawableRes int drawable, int[] expectedPanelsByTier) {
+    private void testResource(String drawableName, @DrawableRes int drawable, int[] expectedPanelsByTier) {
         Context appContext = InstrumentationRegistry.getTargetContext();
         Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), drawable);
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
@@ -40,24 +43,32 @@ public class PanelAnalyzerTest {
         ArrayList<Rect> currentTier = new ArrayList<>();
 
         int currentY = panels.get(0).top;
-        for(Rect panel: panels) {
-            if(panel.top == currentY) {
+        for (Rect panel : panels) {
+            if (panel.top == currentY) {
                 currentTier.add(panel);
-            }
-            else {
+            } else {
                 tiers.add(currentTier);
                 currentY = panel.top;
                 currentTier = new ArrayList<>();
+                currentTier.add(panel);
             }
         }
         // Add the last panel
         tiers.add(currentTier);
 
-        assertEquals("Invalid tier number,", expectedPanelsByTier.length, tiers.size());
+        Log.e(TAG, "Detected tiers for " + drawableName + ": " + tiers.toString());
+        assertEquals("Invalid tier count for " + drawableName, expectedPanelsByTier.length, tiers.size());
+
+        for (int i = 0; i < tiers.size(); i++) {
+            ArrayList<Rect> tier = tiers.get(i);
+
+            assertEquals("Invalid panel count in tier " + (i + 1) + " for " + drawableName, expectedPanelsByTier[i], tier.size());
+        }
+
     }
 
     @Test
     public void computeCorrectPanels() throws Exception {
-        testResource(R.drawable.sample, new int[]{2, 3, 2, 2});
+        testResource("sample", R.drawable.sample, new int[]{2, 3, 2, 2});
     }
 }
