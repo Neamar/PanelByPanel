@@ -13,8 +13,14 @@ import java.util.ArrayList;
 
 public class PanelAnalyzer {
     private static final String TAG = "PanelAnalyzer";
+    private static final int[] DEBUG_COLORS = new int[]{
+            Color.rgb(255, 0, 0),
+            Color.rgb(0, 255, 0),
+            Color.rgb(0, 0, 255),
+    };
+
     private Bitmap bitmap;
-    private static final int SIMILARITY_THRESHOLD = 10;
+    private static final int SIMILARITY_THRESHOLD = 20;
     private static final int MIN_PANEL_HEIGHT = 30;
 
     public PanelAnalyzer(Bitmap bitmap) {
@@ -30,7 +36,7 @@ public class PanelAnalyzer {
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
 
-        Point panelStart = null;
+        Point tierStart = null;
         int width = bitmap.getWidth();
         for (int y = 0; y < bitmap.getHeight(); y++) {
             // Number of non-background color pixel we'll allow
@@ -54,16 +60,16 @@ public class PanelAnalyzer {
                 x++;
             }
             boolean fullyWhite = baseTolerance > 0;
-            if (fullyWhite && panelStart != null) {
-                if (y - panelStart.y > MIN_PANEL_HEIGHT) {
+            if (fullyWhite && tierStart != null) {
+                if (y - tierStart.y > MIN_PANEL_HEIGHT) {
                     // We have a white line, stop the panel here
-                    rowPanels.add(new Rect(panelStart.x, panelStart.y, width, y + 1));
-                    Log.i(TAG, "Adding row panel from " + panelStart.y + " to " + y);
-                    panelStart = null;
+                    rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y + 1));
+                    Log.i(TAG, "Adding row panel from " + tierStart.y + " to " + y);
+                    tierStart = null;
                 }
-            } else if (!fullyWhite && panelStart == null) {
+            } else if (!fullyWhite && tierStart == null) {
                 // We have the start of a new panel
-                panelStart = new Point(0, y - 1);
+                tierStart = new Point(0, y - 1);
             }
         }
 
@@ -78,10 +84,10 @@ public class PanelAnalyzer {
     public ArrayList<Rect> getPanels(boolean debug) {
         Canvas debugCanvas = null;
         Paint debugPaint = null;
-        if(debug) {
+        int debugCount = 0;
+        if (debug) {
             debugCanvas = new Canvas(bitmap);
             debugPaint = new Paint();
-            debugPaint.setColor(Color.rgb(255, 0, 0));
             debugPaint.setStrokeWidth(4);
             debugPaint.setStyle(Paint.Style.STROKE);
         }
@@ -127,7 +133,8 @@ public class PanelAnalyzer {
                         Log.i(TAG, "Adding panel at " + rect.toString());
                         panelStart = null;
 
-                        if(debug) {
+                        if (debug) {
+                            debugPaint.setColor(DEBUG_COLORS[debugCount++ % DEBUG_COLORS.length]);
                             debugCanvas.drawRect(rect, debugPaint);
                         }
                     }
