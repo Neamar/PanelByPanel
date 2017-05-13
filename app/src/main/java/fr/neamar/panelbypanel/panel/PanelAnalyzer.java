@@ -23,11 +23,11 @@ public class PanelAnalyzer {
     // How close on each RGB component a color has to be to be considered "background color"
     private static final int SIMILARITY_THRESHOLD = 20;
 
-    // Minimum height (px) for a tier
-    private static final int MIN_TIER_HEIGHT = 30;
+    // Minimum height (%) for a tier
+    private static final float MIN_TIER_HEIGHT = 0.1f;
 
-    // Minimum width (px) for a panel
-    private static final int MIN_PANEL_WIDTH = 30;
+    // Minimum width (%) for a panel
+    private static final float MIN_PANEL_WIDTH = 0.1f;
 
     // Percentage of pixels that can be different from background color before we assume the line is not "background color".
     // Useful for bad scans (stains, ...), footnotes or art effects between tiers / panels
@@ -50,11 +50,14 @@ public class PanelAnalyzer {
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
 
-        Point tierStart = null;
         int width = bitmap.getWidth();
+        int minTierHeight = (int) (bitmap.getHeight() * MIN_TIER_HEIGHT);
+        int baseTolerance = (int) (width * TIER_NOT_EMPTY_TOLERANCE);
+
+        Point tierStart = null;
         for (int y = 0; y < bitmap.getHeight(); y++) {
             // Number of non-background color pixel we'll allow
-            int baseTolerance = Math.round(width * TIER_NOT_EMPTY_TOLERANCE);
+            int baseToleranceCount = baseTolerance;
             int x = 0;
             while (x < width) {
                 int currentColor = bitmap.getPixel(x, y);
@@ -66,16 +69,16 @@ public class PanelAnalyzer {
                 int dg = bg - g;
                 int db = bb - b;
                 if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
-                    baseTolerance--;
-                    if (baseTolerance <= 0) {
+                    baseToleranceCount--;
+                    if (baseToleranceCount <= 0) {
                         break;
                     }
                 }
                 x++;
             }
-            boolean fullyWhite = baseTolerance > 0;
+            boolean fullyWhite = baseToleranceCount > 0;
             if (fullyWhite && tierStart != null) {
-                if (y - tierStart.y > MIN_TIER_HEIGHT) {
+                if (y - tierStart.y > minTierHeight) {
                     // We have a white line, stop the panel here
                     rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y + 1));
                     Log.i(TAG, "Adding row panel from " + tierStart.y + " to " + y);
@@ -114,12 +117,15 @@ public class PanelAnalyzer {
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
 
+
         for (Rect rowPanel : tiers) {
             Point panelStart = null;
             int height = rowPanel.height();
+            int minPanelWidth = (int) (rowPanel.width() * MIN_PANEL_WIDTH);
+            int baseTolerance = (int) (height * PANEL_NOT_EMPTY_TOLERANCE);
             for (int x = rowPanel.left; x < rowPanel.right - 1; x++) {
                 // Number of non-background color pixel we'll allow
-                int baseTolerance = Math.round(height * PANEL_NOT_EMPTY_TOLERANCE);
+                int baseToleranceCount = baseTolerance;
                 int y = rowPanel.top;
                 while (y < rowPanel.bottom) {
                     int currentColor = bitmap.getPixel(x, y);
@@ -131,16 +137,16 @@ public class PanelAnalyzer {
                     int dg = bg - g;
                     int db = bb - b;
                     if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
-                        baseTolerance--;
-                        if (baseTolerance <= 0) {
+                        baseToleranceCount--;
+                        if (baseToleranceCount <= 0) {
                             break;
                         }
                     }
                     y++;
                 }
-                boolean fullyWhite = baseTolerance > 0;
+                boolean fullyWhite = baseToleranceCount > 0;
                 if (fullyWhite && panelStart != null) {
-                    if (x - panelStart.x > MIN_PANEL_WIDTH) {
+                    if (x - panelStart.x > minPanelWidth) {
                         // We have a white line, stop the panel here
                         Rect rect = new Rect(panelStart.x, panelStart.y, x, rowPanel.bottom);
                         panels.add(rect);

@@ -72,7 +72,8 @@ public class PanelAnalyzerTest {
     }
 
     @Test
-    public void computeCorrectPanels() throws Exception {
-        testResource("panel_1", fr.neamar.panelbypanel.test.R.drawable.panel_1, new int[]{3, 3, 2, 2});
+    public void donRosaTest() throws Exception {
+        testResource("don_rosa_the_beagle_boys_vs_the_money_bin", fr.neamar.panelbypanel.test.R.drawable.don_rosa_the_beagle_boys_vs_the_money_bin, new int[]{3, 3, 2, 2});
+        testResource("don_rosa_the_black_knight_glorps_again", fr.neamar.panelbypanel.test.R.drawable.don_rosa_the_black_knight_glorps_again, new int[]{2, 3, 2, 3});
     }
 }
