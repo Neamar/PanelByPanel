@@ -34,6 +34,7 @@ public class ViewerActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample, options);
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, false);
         panels = panelAnalyzer.getPanels();
+        panelAnalyzer.colorizeBackground();
 
         panelImageView.setImageBitmap(bitmap);
         panelImageView.setOnClickListener(new View.OnClickListener() {

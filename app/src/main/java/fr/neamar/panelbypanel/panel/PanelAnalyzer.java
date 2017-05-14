@@ -27,7 +27,7 @@ public class PanelAnalyzer {
     private static final int DEBUG_BACKGROUND_VERTICAL = Color.rgb(255, 0, 128);
 
     // How close on each RGB component a color has to be to be considered "background color"
-    private static final int SIMILARITY_THRESHOLD = 20;
+    private static final int SIMILARITY_THRESHOLD = 15 * 15;
 
     // Minimum height (%) for a tier
     private static final float MIN_TIER_HEIGHT = 0.1f;
@@ -99,6 +99,32 @@ public class PanelAnalyzer {
         return bestMatch;
     }
 
+    public void colorizeBackground() {
+        int baseColor = getBaseColor();
+        int br = (baseColor >> 16) & 0xff;
+        int bg = (baseColor >> 8) & 0xff;
+        int bb = (baseColor) & 0xff;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int currentColor = bitmap.getPixel(i, j);
+                int r = (currentColor >> 16) & 0xff;
+                int g = (currentColor >> 8) & 0xff;
+                int b = (currentColor) & 0xff;
+
+                // Square delta for fast absolute value
+                int dr = br - r;
+                int dg = bg - g;
+                int db = bb - b;
+                if (dr * dr > SIMILARITY_THRESHOLD || dg * dg > SIMILARITY_THRESHOLD || db * db > SIMILARITY_THRESHOLD) {
+                    // Not background
+                } else {
+                    bitmap.setPixel(i, j, DEBUG_BACKGROUND_HORIZONTAL);
+                }
+            }
+        }
+    }
+
     // Horizontal gutter detection
     public ArrayList<Rect> getTiers() {
         ArrayList<Rect> rowPanels = new ArrayList<>();
@@ -135,8 +161,6 @@ public class PanelAnalyzer {
                         if (baseToleranceCount <= 0) {
                             break;
                         }
-                    } else if (debug) {
-                        bitmap.setPixel(x, y, DEBUG_BACKGROUND_HORIZONTAL);
                     }
                     x++;
                 }
@@ -210,8 +234,6 @@ public class PanelAnalyzer {
                                 break;
                             }
 
-                        } else if (debug) {
-                            bitmap.setPixel(x, y, DEBUG_BACKGROUND_VERTICAL);
                         }
                         y++;
                     }
