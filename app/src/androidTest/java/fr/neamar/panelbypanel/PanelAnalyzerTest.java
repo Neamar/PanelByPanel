@@ -85,12 +85,17 @@ public class PanelAnalyzerTest {
 
     @Test
     public void eiichirOdaTest() throws Exception {
-        testResource("eiichiro_oda_one_piece", fr.neamar.panelbypanel.test.R.drawable.eiichiro_oda_one_piece, new int[]{2, 1, 2});
+        testResource("eiichiro_oda_one_piece", fr.neamar.panelbypanel.test.R.drawable.eiichiro_oda_one_piece, new int[]{3, 1, 2});
     }
 
     @Test
     public void sanctuaireTest() throws Exception {
         // testResource("dorison_bec_sanctuaire_vol_1", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_1, new int[]{3, 3, 1});
         testResource("dorison_bec_sanctuaire_vol_2", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_2, new int[]{3, 2, 3});
+    }
+
+    @Test
+    public void universalWarOneTest() throws Exception {
+        testResource("bajram_universal_war_one", fr.neamar.panelbypanel.test.R.drawable.bajram_universal_war_one, new int[]{4, 1, 4});
     }
 }

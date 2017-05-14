@@ -156,7 +156,7 @@ public class PanelAnalyzer {
                     int dr = br - r;
                     int dg = bg - g;
                     int db = bb - b;
-                    if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
+                    if (dr * dr > SIMILARITY_THRESHOLD || dg * dg > SIMILARITY_THRESHOLD || db * db > SIMILARITY_THRESHOLD) {
                         baseToleranceCount--;
                         if (baseToleranceCount <= 0) {
                             break;
@@ -228,7 +228,7 @@ public class PanelAnalyzer {
                         int dr = br - r;
                         int dg = bg - g;
                         int db = bb - b;
-                        if (dr * dr > SIMILARITY_THRESHOLD && dg * dg > SIMILARITY_THRESHOLD && db * db > SIMILARITY_THRESHOLD) {
+                        if (dr * dr > SIMILARITY_THRESHOLD || dg * dg > SIMILARITY_THRESHOLD || db * db > SIMILARITY_THRESHOLD) {
                             baseToleranceCount--;
                             if (baseToleranceCount <= 0) {
                                 break;
