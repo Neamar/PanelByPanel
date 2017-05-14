@@ -49,10 +49,13 @@ public class PanelAnalyzer {
     private int width;
     private int height;
 
-    public PanelAnalyzer(Bitmap bitmap) {
+    private boolean debug;
+
+    public PanelAnalyzer(Bitmap bitmap, boolean debug) {
         this.bitmap = bitmap;
         this.width = bitmap.getWidth();
         this.height = bitmap.getHeight();
+        this.debug = debug;
     }
 
     private void addColorsAround(int x, int y, int spread, ArrayList<Integer> colors) {
@@ -66,7 +69,7 @@ public class PanelAnalyzer {
     }
 
     private int getBaseColor() {
-        ArrayList<Integer> samples = new ArrayList<Integer>();
+        ArrayList<Integer> samples = new ArrayList<>();
 
         // Sample colors in the four corners
         addColorsAround(0, 0, 5, samples);
@@ -97,7 +100,7 @@ public class PanelAnalyzer {
     }
 
     // Horizontal gutter detection
-    public ArrayList<Rect> getTiers(Boolean debug) {
+    public ArrayList<Rect> getTiers() {
         ArrayList<Rect> rowPanels = new ArrayList<>();
 
         int baseColor = getBaseColor();
@@ -161,10 +164,6 @@ public class PanelAnalyzer {
 
     // Vertical gutter detection
     public ArrayList<Rect> getPanels() {
-        return getPanels(false);
-    }
-
-    public ArrayList<Rect> getPanels(boolean debug) {
         Canvas debugCanvas = null;
         Paint debugPaint = null;
         int debugCount = 0;
@@ -175,14 +174,13 @@ public class PanelAnalyzer {
             debugPaint.setStyle(Paint.Style.STROKE);
         }
 
-        ArrayList<Rect> tiers = getTiers(debug);
+        ArrayList<Rect> tiers = getTiers();
         ArrayList<Rect> panels = new ArrayList<>();
 
         int baseColor = getBaseColor();
         int br = (baseColor >> 16) & 0xff;
         int bg = (baseColor >> 8) & 0xff;
         int bb = (baseColor) & 0xff;
-
 
         for (Rect rowPanel : tiers) {
             Point panelStart = null;
@@ -202,6 +200,7 @@ public class PanelAnalyzer {
                         int g = (currentColor >> 8) & 0xff;
                         int b = (currentColor) & 0xff;
 
+                        // Square delta for fast absolute value
                         int dr = br - r;
                         int dg = bg - g;
                         int db = bb - b;

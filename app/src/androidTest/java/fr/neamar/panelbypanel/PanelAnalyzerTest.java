@@ -44,7 +44,7 @@ public class PanelAnalyzerTest {
         options.inScaled = false;
 
         Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), drawable, options);
-        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap);
+        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, false);
         ArrayList<Rect> panels = panelAnalyzer.getPanels();
 
         assertFalse("No panels detected for " + drawableName, panels.isEmpty());
