@@ -9,9 +9,15 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
+import junit.framework.AssertionFailedError;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
@@ -27,14 +33,27 @@ import static junit.framework.Assert.assertFalse;
 @RunWith(AndroidJUnit4.class)
 public class PanelAnalyzerTest {
     public static final String TAG = "PanelAnalyzerTest";
+    public int errorCount = 0;
+    private void saveBitmap(Context context, Bitmap bitmap) throws IOException {
+        File outputDir = context.getCacheDir(); // context being the Activity pointer
+        File outputFile = File.createTempFile("error-" + errorCount, ".jpg", outputDir);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+        byte[] bitmapdata = bos.toByteArray();
 
+        //write the bytes in file
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        fos.write(bitmapdata);
+        fos.flush();
+        fos.close();
+    }
     /**
      * Test that an image is correctly analyzed
      *
      * @param drawable             the drawable to analyzed
      * @param expectedPanelsByTier the expected panel distribution -- for instance 3,2,1 for an image with a first panel comprising 3 tiers, the second panel being made up of 2 and the last being a single tier.
      */
-    private void testResource(String drawableName, @DrawableRes int drawable, int[] expectedPanelsByTier) {
+    private void testResource(String drawableName, @DrawableRes int drawable, int[] expectedPanelsByTier) throws IOException {
         // getContext() => get a context for the test app, with the test drawables
         // getTargetContext() => get a context for the real app, with the actual drawable that'll be shipped.
         Context appContext = InstrumentationRegistry.getContext();
@@ -66,13 +85,18 @@ public class PanelAnalyzerTest {
         // Add the last panel
         tiers.add(currentTier);
 
-        Log.e(TAG, "Detected tiers for " + drawableName + ": " + tiers.toString());
-        assertEquals("Invalid tier count for " + drawableName, expectedPanelsByTier.length, tiers.size());
+        try {
+            Log.e(TAG, "Detected tiers for " + drawableName + ": " + tiers.toString());
+            assertEquals("Invalid tier count for " + drawableName, expectedPanelsByTier.length, tiers.size());
 
-        for (int i = 0; i < tiers.size(); i++) {
-            ArrayList<Rect> tier = tiers.get(i);
+            for (int i = 0; i < tiers.size(); i++) {
+                ArrayList<Rect> tier = tiers.get(i);
 
-            assertEquals("Invalid panel count in tier " + (i + 1) + " for " + drawableName, expectedPanelsByTier[i], tier.size());
+                assertEquals("Invalid panel count in tier " + (i + 1) + " for " + drawableName, expectedPanelsByTier[i], tier.size());
+            }
+        } catch (AssertionFailedError e) {
+            saveBitmap(appContext, bitmap);
+            // throw e;
         }
     }
 
@@ -93,7 +117,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void simpleComicSmallMargins() throws Exception {
-        testResource("waterson_calvin_hobbes", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes, new int[]{2,4,4});
+        testResource("waterson_calvin_hobbes", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes, new int[]{2, 4, 4});
     }
 
     @Test
@@ -104,6 +128,11 @@ public class PanelAnalyzerTest {
     @Test
     public void simpleComicScanLineOnLeft() throws Exception {
         testResource("don_rosa_trash_or_treasure", fr.neamar.panelbypanel.test.R.drawable.don_rosa_trash_or_treasure, new int[]{1, 2, 3});
+    }
+
+    @Test
+    public void simpleComicScanWithNoise() throws Exception {
+        testResource("don_rosa_mythological_menagerie", fr.neamar.panelbypanel.test.R.drawable.don_rosa_mythological_menagerie, new int[]{2, 2, 2, 2});
     }
 
     @Test
@@ -128,11 +157,11 @@ public class PanelAnalyzerTest {
 
     @Test
     public void noMarginBackground() throws Exception {
-        testResource("nebezial_death_vigil", fr.neamar.panelbypanel.test.R.drawable.nebezial_death_vigil, new int[]{1,4,1,1,1,4});
+        testResource("nebezial_death_vigil", fr.neamar.panelbypanel.test.R.drawable.nebezial_death_vigil, new int[]{1, 4, 1, 1, 1, 4});
     }
 
     @Test
     public void complexNonUniformBackground() throws Exception {
-        testResource("shiniez_sunstone", fr.neamar.panelbypanel.test.R.drawable.shiniez_sunstone, new int[]{1,1,1,1,5});
+        testResource("shiniez_sunstone", fr.neamar.panelbypanel.test.R.drawable.shiniez_sunstone, new int[]{1, 1, 1, 1, 5});
     }
 }

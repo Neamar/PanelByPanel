@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.support.annotation.ColorInt;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -99,22 +100,32 @@ public class PanelAnalyzer {
         return bestMatch;
     }
 
-    public void colorizeBackground() {
-        int baseColor = getBaseColor();
-        int br = (baseColor >> 16) & 0xff;
-        int bg = (baseColor >> 8) & 0xff;
-        int bb = (baseColor) & 0xff;
+    /**
+     * Transform a color to a value between 0 and 255
+     *
+     * @param color
+     * @return a value between 0 and 255
+     */
+    private int toGray(@ColorInt int color) {
+        int r = (color >> 16) & 0xff;
+        int g = (color >> 8) & 0xff;
+        int b = (color) & 0xff;
+        return (r + g + b) / 3;
+    }
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                int currentColor = bitmap.getPixel(i, j);
-                int r = (currentColor >> 16) & 0xff;
-                int g = (currentColor >> 8) & 0xff;
-                int b = (currentColor) & 0xff;
-                int gray = (r + g + b) / 3;
-                gray = gray - (gray % 64);
-                gray = Color.argb(1, gray, gray, gray);
-                bitmap.setPixel(i, j, gray);
+    public void colorizeBackground() {
+        int MAX_GRADIENT = 100;
+
+        for (int y = 0; y < height; y++) {
+            int lastValue = toGray(bitmap.getPixel(0, y));
+
+            for (int x = 0; x < width; x++) {
+                int currentColor = toGray(bitmap.getPixel(x, y));
+                if(Math.abs(lastValue - currentColor) > MAX_GRADIENT) {
+                    break;
+                }
+                // lastValue = currentColor;
+                bitmap.setPixel(x, y, DEBUG_BACKGROUND_HORIZONTAL);
             }
         }
     }

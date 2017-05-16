@@ -9,6 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
@@ -34,7 +38,7 @@ public class ViewerActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample, options);
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, true);
         panels = panelAnalyzer.getPanels();
-        // panelAnalyzer.colorizeBackground();
+        panelAnalyzer.colorizeBackground();
 
         panelImageView.setImageBitmap(bitmap);
         panelImageView.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +55,24 @@ public class ViewerActivity extends AppCompatActivity {
                 moveToNextPanel();
             }
         }, 100);
+
+        File outputDir = getCacheDir(); // context being the Activity pointer
+        File outputFile = null;
+        try {
+            outputFile = File.createTempFile("error-" + "0", ".jpg", outputDir);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+            byte[] bitmapdata = bos.toByteArray();
+
+            //write the bytes in file
+            FileOutputStream fos = new FileOutputStream(outputFile);
+            fos.write(bitmapdata);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     protected void moveToNextPanel() {
