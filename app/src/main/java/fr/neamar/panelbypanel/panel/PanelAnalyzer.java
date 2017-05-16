@@ -111,16 +111,10 @@ public class PanelAnalyzer {
                 int r = (currentColor >> 16) & 0xff;
                 int g = (currentColor >> 8) & 0xff;
                 int b = (currentColor) & 0xff;
-
-                // Square delta for fast absolute value
-                int dr = br - r;
-                int dg = bg - g;
-                int db = bb - b;
-                if (dr * dr > SIMILARITY_THRESHOLD || dg * dg > SIMILARITY_THRESHOLD || db * db > SIMILARITY_THRESHOLD) {
-                    // Not background
-                } else {
-                    bitmap.setPixel(i, j, DEBUG_BACKGROUND_HORIZONTAL);
-                }
+                int gray = (r + g + b) / 3;
+                gray = gray - (gray % 64);
+                gray = Color.argb(1, gray, gray, gray);
+                bitmap.setPixel(i, j, gray);
             }
         }
     }
