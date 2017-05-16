@@ -78,7 +78,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void simpleComicWhiteMargin1() throws Exception {
-        testResource("morris_lucky_luke2", fr.neamar.panelbypanel.test.R.drawable.morris_lucky_luke, new int[]{2, 3, 2, 3});
+        testResource("morris_lucky_luke2", fr.neamar.panelbypanel.test.R.drawable.morris_lucky_luke2, new int[]{2, 3, 2, 3});
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void simpleComicSmallMargins() throws Exception {
-        testResource("waterson_calvin_hobbes", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes, new int[]{1,1,1,1,5});
+        testResource("waterson_calvin_hobbes", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes, new int[]{2,4,4});
     }
 
     @Test
