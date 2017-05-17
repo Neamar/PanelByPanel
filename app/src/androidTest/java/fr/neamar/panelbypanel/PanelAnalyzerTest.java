@@ -34,6 +34,7 @@ import static junit.framework.Assert.assertFalse;
 public class PanelAnalyzerTest {
     public static final String TAG = "PanelAnalyzerTest";
     public int errorCount = 0;
+
     private void saveBitmap(Context context, Bitmap bitmap) throws IOException {
         File outputDir = context.getCacheDir(); // context being the Activity pointer
         File outputFile = File.createTempFile("error-" + errorCount, ".jpg", outputDir);
@@ -47,6 +48,7 @@ public class PanelAnalyzerTest {
         fos.flush();
         fos.close();
     }
+
     /**
      * Test that an image is correctly analyzed
      *
@@ -102,7 +104,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void simpleComicWhiteMargin1() throws Exception {
-        testResource("morris_lucky_luke2", fr.neamar.panelbypanel.test.R.drawable.morris_lucky_luke2, new int[]{2, 3, 2, 3});
+        testResource("morris_lucky_luke_2", fr.neamar.panelbypanel.test.R.drawable.morris_lucky_luke_2, new int[]{2, 3, 2, 3});
     }
 
     @Test
@@ -116,22 +118,47 @@ public class PanelAnalyzerTest {
     }
 
     @Test
-    public void simpleComicSmallMargins() throws Exception {
+    public void simpleComicWhiteMargin() throws Exception {
+        testResource("zorn_dirna_2", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna_2, new int[]{2,2,3,3});
+    }
+
+    @Test
+    public void simpleComicOverflowingPanelWhiteMargin() throws Exception {
+        testResource("zorn_dirna", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna, new int[]{2,3,2});
+    }
+
+    @Test
+    public void simpleComicSmallPanels() throws Exception {
+        testResource("de_cape_et_de_crocs", fr.neamar.panelbypanel.test.R.drawable.de_cape_et_de_crocs, new int[]{1, 1, 3, 1, 4});
+    }
+
+    @Test
+    public void smallMargins() throws Exception {
         testResource("waterson_calvin_hobbes", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes, new int[]{2, 4, 4});
     }
 
     @Test
-    public void simpleComicScanLineOnRightOverflowingText() throws Exception {
+    public void bicolorBackground() throws Exception {
+        testResource("waterson_calvin_hobbes_3", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes_3, new int[]{5,4,4});
+    }
+
+    @Test
+    public void borderlessPanel() throws Exception {
+        testResource("waterson_calvin_hobbes_2", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes_2, new int[]{4, 4});
+    }
+
+    @Test
+    public void scanLineOnRightOverflowingText() throws Exception {
         testResource("don_rosa_the_black_knight_glorps_again", fr.neamar.panelbypanel.test.R.drawable.don_rosa_the_black_knight_glorps_again, new int[]{2, 3, 2, 3});
     }
 
     @Test
-    public void simpleComicScanLineOnLeft() throws Exception {
+    public void scanLineOnLeft() throws Exception {
         testResource("don_rosa_trash_or_treasure", fr.neamar.panelbypanel.test.R.drawable.don_rosa_trash_or_treasure, new int[]{1, 2, 3});
     }
 
     @Test
-    public void simpleComicScanWithNoise() throws Exception {
+    public void scanWithNoise() throws Exception {
         testResource("don_rosa_mythological_menagerie", fr.neamar.panelbypanel.test.R.drawable.don_rosa_mythological_menagerie, new int[]{2, 2, 2, 2});
     }
 
