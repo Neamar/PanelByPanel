@@ -63,13 +63,18 @@ public class PanelAnalyzerTest {
     private void saveBitmap(String name, Bitmap bitmap) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         getResizedBitmap(bitmap, 350).compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
         Log.e(ERROR_TAG, "Error:" + name);
         for(int i = 0; i < encoded.length(); i += 900) {
             Log.e(ERROR_TAG, encoded.substring(i, Math.min(encoded.length(), i + 900)));
+        }
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -156,6 +161,12 @@ public class PanelAnalyzerTest {
     public void simpleComicWhiteMargin5() throws Exception {
         testResource("herge_tintin", fr.neamar.panelbypanel.test.R.drawable.herge_tintin, new int[]{2,3,3,3});
     }
+
+    @Test
+    public void simpleComicWhiteMargin6() throws Exception {
+        testResource("peyo_schtroumpfs", fr.neamar.panelbypanel.test.R.drawable.peyo_schtroumpfs, new int[]{2,3,3,4});
+    }
+
 
 
     @Test
