@@ -148,9 +148,15 @@ public class PanelAnalyzerTest {
     }
 
     @Test
-    public void simpleComicWhiteMargin() throws Exception {
+    public void simpleComicWhiteMargin4() throws Exception {
         testResource("zorn_dirna_2", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna_2, new int[]{2,2,3,3});
     }
+
+    @Test
+    public void simpleComicWhiteMargin5() throws Exception {
+        testResource("herge_tintin", fr.neamar.panelbypanel.test.R.drawable.herge_tintin, new int[]{2,3,3,3});
+    }
+
 
     @Test
     public void simpleComicOverflowingPanelWhiteMargin() throws Exception {
