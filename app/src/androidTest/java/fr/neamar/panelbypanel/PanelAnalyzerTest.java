@@ -35,18 +35,28 @@ public class PanelAnalyzerTest {
     public static final String TAG = "PanelAnalyzerTest";
     public int errorCount = 0;
 
-    private void saveBitmap(Context context, Bitmap bitmap) throws IOException {
-        File outputDir = context.getCacheDir(); // context being the Activity pointer
-        File outputFile = File.createTempFile("error-" + errorCount, ".jpg", outputDir);
+    private void saveBitmap(Bitmap bitmap) throws IOException {
+
+        File path = new File("/data/local/tmp/pbp-tests");
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+        String filename = "error-" + errorCount + ".png";
+        File file = new File(path, filename);
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
         byte[] bitmapdata = bos.toByteArray();
 
         //write the bytes in file
-        FileOutputStream fos = new FileOutputStream(outputFile);
+        FileOutputStream fos = new FileOutputStream(file);
         fos.write(bitmapdata);
         fos.flush();
         fos.close();
+
+        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+        throw new RuntimeException(path.toString());
     }
 
     /**
@@ -97,7 +107,7 @@ public class PanelAnalyzerTest {
                 assertEquals("Invalid panel count in tier " + (i + 1) + " for " + drawableName, expectedPanelsByTier[i], tier.size());
             }
         } catch (AssertionFailedError e) {
-            saveBitmap(appContext, bitmap);
+            saveBitmap(bitmap);
             // throw e;
         }
     }
