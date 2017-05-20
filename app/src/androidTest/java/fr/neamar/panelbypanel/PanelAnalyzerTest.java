@@ -3,20 +3,21 @@ package fr.neamar.panelbypanel;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.support.annotation.DrawableRes;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Base64;
 import android.util.Log;
 
 import junit.framework.AssertionFailedError;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -32,31 +33,44 @@ import static junit.framework.Assert.assertFalse;
  */
 @RunWith(AndroidJUnit4.class)
 public class PanelAnalyzerTest {
-    public static final String TAG = "PanelAnalyzerTest";
-    public int errorCount = 0;
+    private static final String TAG = "PanelAnalyzerTest";
+    private static final String ERROR_TAG = "PBPTestError";
 
-    private void saveBitmap(Bitmap bitmap) throws IOException {
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        int newHeight = (int) (scaleWidth * height);
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
 
-        File path = new File("/data/local/tmp/pbp-tests");
-        if (!path.exists()) {
-            path.mkdirs();
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
+
+    /**
+     * Write a base64 representation of the bitmap to the logs
+     * @param name
+     * @param bitmap
+     * @throws IOException
+     */
+    private void saveBitmap(String name, Bitmap bitmap) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        getResizedBitmap(bitmap, 350).compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        Log.e(ERROR_TAG, "Error:" + name);
+        for(int i = 0; i < encoded.length(); i += 900) {
+            Log.e(ERROR_TAG, encoded.substring(i, Math.min(encoded.length(), i + 900)));
         }
-        String filename = "error-" + errorCount + ".png";
-        File file = new File(path, filename);
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-        byte[] bitmapdata = bos.toByteArray();
-
-        //write the bytes in file
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(bitmapdata);
-        fos.flush();
-        fos.close();
-
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-
-        throw new RuntimeException(path.toString());
     }
 
     /**
@@ -73,9 +87,10 @@ public class PanelAnalyzerTest {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
+        options.inMutable = true;
 
         Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(), drawable, options);
-        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, false);
+        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, true);
         ArrayList<Rect> panels = panelAnalyzer.getPanels();
 
         assertFalse("No panels detected for " + drawableName, panels.isEmpty());
@@ -107,9 +122,14 @@ public class PanelAnalyzerTest {
                 assertEquals("Invalid panel count in tier " + (i + 1) + " for " + drawableName, expectedPanelsByTier[i], tier.size());
             }
         } catch (AssertionFailedError e) {
-            saveBitmap(bitmap);
-            // throw e;
+            saveBitmap(drawableName, bitmap);
+            throw e;
         }
+    }
+
+    @BeforeClass
+    public static void initialize() {
+        Log.e(ERROR_TAG, "--START");
     }
 
     @Test
