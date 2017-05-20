@@ -17,7 +17,7 @@ test:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
-    - adb logcat > logs.txt:
+    - adb logcat -v threadtime > logs.txt:
         background: true
   override:
     - ./gradlew test assembleDebug assembleDebugAndroidTest --console=plain
