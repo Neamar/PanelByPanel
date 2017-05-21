@@ -56,6 +56,7 @@ public class PanelAnalyzerTest {
 
     /**
      * Write a base64 representation of the bitmap to the logs
+     *
      * @param name
      * @param bitmap
      * @throws IOException
@@ -68,7 +69,7 @@ public class PanelAnalyzerTest {
         String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
         Log.e(ERROR_TAG, "Error:" + name);
-        for(int i = 0; i < encoded.length(); i += 900) {
+        for (int i = 0; i < encoded.length(); i += 900) {
             Log.e(ERROR_TAG, encoded.substring(i, Math.min(encoded.length(), i + 900)));
         }
         try {
@@ -154,22 +155,27 @@ public class PanelAnalyzerTest {
 
     @Test
     public void simpleComicWhiteMargin4() throws Exception {
-        testResource("zorn_dirna_2", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna_2, new int[]{2,2,3,3});
+        testResource("zorn_dirna_2", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna_2, new int[]{2, 2, 3, 3});
     }
 
     @Test
     public void simpleComicWhiteMargin5() throws Exception {
-        testResource("herge_tintin", fr.neamar.panelbypanel.test.R.drawable.herge_tintin, new int[]{2,3,3,3});
+        testResource("peanuts", fr.neamar.panelbypanel.test.R.drawable.peanuts, new int[]{2, 5, 5});
+    }
+
+    @Test
+    public void simpleComicWhiteMargin6() throws Exception {
+        testResource("herge_tintin", fr.neamar.panelbypanel.test.R.drawable.herge_tintin, new int[]{2, 3, 3, 3});
     }
 
     @Test
     public void simpleComicWhiteMarginCompleteBlackBorderAroundPage() throws Exception {
-        testResource("peyo_schtroumpfs", fr.neamar.panelbypanel.test.R.drawable.peyo_schtroumpfs, new int[]{2,3,3,4});
+        testResource("peyo_schtroumpfs", fr.neamar.panelbypanel.test.R.drawable.peyo_schtroumpfs, new int[]{2, 3, 3, 4});
     }
 
     @Test
     public void simpleComicOverflowingPanelWhiteMargin() throws Exception {
-        testResource("zorn_dirna", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna, new int[]{2,3,2});
+        testResource("zorn_dirna", fr.neamar.panelbypanel.test.R.drawable.zorn_dirna, new int[]{2, 3, 2});
     }
 
     @Test
@@ -184,7 +190,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void bicolorBackground() throws Exception {
-        testResource("waterson_calvin_hobbes_3", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes_3, new int[]{5,4,4});
+        testResource("waterson_calvin_hobbes_3", fr.neamar.panelbypanel.test.R.drawable.waterson_calvin_hobbes_3, new int[]{5, 4, 4});
     }
 
     @Test
@@ -230,10 +236,5 @@ public class PanelAnalyzerTest {
     @Test
     public void universalWarOneTest() throws Exception {
         testResource("bajram_universal_war_one", fr.neamar.panelbypanel.test.R.drawable.bajram_universal_war_one, new int[]{4, 1, 4});
-    }
-
-    @Test
-    public void noMarginBackground() throws Exception {
-        testResource("nebezial_death_vigil", fr.neamar.panelbypanel.test.R.drawable.nebezial_death_vigil, new int[]{1, 4, 1, 1, 1, 4});
     }
 }
