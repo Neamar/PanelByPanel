@@ -101,31 +101,40 @@ public class PanelAnalyzer {
     }
 
     /**
-     * Transform a color to a value between 0 and 255
+     * Returns true if there is a high gradient difference (as defined by threshold) between color1 and color2
      *
-     * @param color
-     * @return a value between 0 and 255
+     * @param color1
+     * @param color2
+     * @param threshold min threshold (over any RGB channel) to count as high gradient
+     * @return true if high gradient
      */
-    private int toGray(@ColorInt int color) {
-        int r = (color >> 16) & 0xff;
-        int g = (color >> 8) & 0xff;
-        int b = (color) & 0xff;
-        return (r + g + b) / 3;
+    private boolean isHighGradient(@ColorInt int color1, @ColorInt int color2, int threshold) {
+        int r1 = (color1 >> 16) & 0xff;
+        int g1 = (color1 >> 8) & 0xff;
+        int b1 = (color1) & 0xff;
+
+        int r2 = (color2 >> 16) & 0xff;
+        int g2 = (color2 >> 8) & 0xff;
+        int b2 = (color2) & 0xff;
+
+        return Math.abs(r1 - r2) > threshold || Math.abs(g1 - g2) > threshold || Math.abs(b1 - b2) > threshold;
     }
 
     public void colorizeBackground() {
-        int MAX_GRADIENT = 100;
+        int MAX_GRADIENT = 50;
 
         for (int y = 0; y < height; y++) {
-            int lastValue = toGray(bitmap.getPixel(0, y));
-
-            for (int x = 0; x < width; x++) {
-                int currentColor = toGray(bitmap.getPixel(x, y));
-                if(Math.abs(lastValue - currentColor) > MAX_GRADIENT) {
+            int x;
+            for (x = 0; x < width; x++) {
+                @ColorInt int color1 = bitmap.getPixel(x > 5 ? x - 5 : 0, y);
+                @ColorInt int color2 = bitmap.getPixel(x, y);
+                if (isHighGradient(color1, color2, MAX_GRADIENT)) {
                     break;
                 }
-                // lastValue = currentColor;
-                bitmap.setPixel(x, y, DEBUG_BACKGROUND_HORIZONTAL);
+            }
+
+            for(int i=0; i < x; i++) {
+                bitmap.setPixel(i, y, DEBUG_BACKGROUND_HORIZONTAL);
             }
         }
     }
