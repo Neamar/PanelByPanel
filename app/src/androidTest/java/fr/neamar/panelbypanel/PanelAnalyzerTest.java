@@ -194,7 +194,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void scanLineOnRightOverflowingText() throws Exception {
-        testResource("don_rosa_the_black_knight_glorps_again", fr.neamar.panelbypanel.test.R.drawable.don_rosa_the_black_knight_glorps_again, new int[]{2, 3, 2, 3});
+        testResource("don_rosa_the_black_knight_glorps_again", fr.neamar.panelbypanel.test.R.drawable.don_rosa_the_black_knight_glorps_again, new int[]{2, 2, 1, 3});
     }
 
     @Test
