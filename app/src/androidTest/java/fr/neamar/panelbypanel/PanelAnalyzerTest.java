@@ -163,11 +163,9 @@ public class PanelAnalyzerTest {
     }
 
     @Test
-    public void simpleComicWhiteMargin6() throws Exception {
+    public void simpleComicWhiteMarginCompleteBlackBorderAroundPage() throws Exception {
         testResource("peyo_schtroumpfs", fr.neamar.panelbypanel.test.R.drawable.peyo_schtroumpfs, new int[]{2,3,3,4});
     }
-
-
 
     @Test
     public void simpleComicOverflowingPanelWhiteMargin() throws Exception {

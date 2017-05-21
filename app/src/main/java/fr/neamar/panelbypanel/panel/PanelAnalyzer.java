@@ -25,25 +25,17 @@ public class PanelAnalyzer {
     // Purple-ish
     private static final int DEBUG_BACKGROUND_VERTICAL = Color.rgb(255, 0, 128);
 
-    // How close on each RGB component a color has to be to be considered "background color"
-    private static final int SIMILARITY_THRESHOLD = 15 * 15;
-
     // Minimum height (%) for a tier
     private static final float MIN_TIER_HEIGHT = 0.1f;
 
     // Minimum width (%) for a panel
     private static final float MIN_PANEL_WIDTH = 0.1f;
 
-    // Percentage of pixels that can be different from background color before we assume the line is not "background color".
-    // Useful for bad scans (stains, ...), footnotes or art effects between tiers / panels
-    private static final float TIER_NOT_EMPTY_TOLERANCE = 0.05f;
-
-    // Percentage of pixels that can be different from background color before we assume the line is not "background color".
-    // Useful for bad scans (stains, ...), footnotes or art effects between tiers / panels
-    private static final float PANEL_NOT_EMPTY_TOLERANCE = 0.1f;
-
+    // Minimum gradient, over the three channels, to consider a pixel as an edge
     private static final int MAX_GRADIENT = 50;
 
+    // Pixels to skip at the top and the left, to avoid potential black border or scan lines
+    private static final int DEFAULT_PAGE_MARGIN = 5;
 
     // Bitmap to use for computations
     private Bitmap bitmap;
@@ -58,16 +50,6 @@ public class PanelAnalyzer {
         this.width = bitmap.getWidth();
         this.height = bitmap.getHeight();
         this.debug = debug;
-    }
-
-    private void addColorsAround(int x, int y, int spread, ArrayList<Integer> colors) {
-        for (int i = x - spread; i < x + spread; i++) {
-            for (int j = y - spread; j < y + spread; j++) {
-                if (i >= 0 && i < width && j >= 0 && j < height) {
-                    colors.add(bitmap.getPixel(i, j));
-                }
-            }
-        }
     }
 
     /**
@@ -91,18 +73,17 @@ public class PanelAnalyzer {
     }
 
     public void colorizeBackground() {
-
-        for (int y = 0; y < height; y++) {
+        for (int y = DEFAULT_PAGE_MARGIN; y < height - DEFAULT_PAGE_MARGIN; y++) {
             int x;
-            for (x = 0; x < width; x++) {
-                @ColorInt int color1 = bitmap.getPixel(x > 5 ? x - 5 : 0, y);
+            for (x = DEFAULT_PAGE_MARGIN; x < width - DEFAULT_PAGE_MARGIN; x++) {
+                @ColorInt int color1 = bitmap.getPixel(x > DEFAULT_PAGE_MARGIN + 5 ? x - 5 : DEFAULT_PAGE_MARGIN, y);
                 @ColorInt int color2 = bitmap.getPixel(x, y);
                 if (isHighGradient(color1, color2, MAX_GRADIENT)) {
                     break;
                 }
             }
 
-            for(int i=0; i < x; i++) {
+            for (int i = 0; i < x; i++) {
                 bitmap.setPixel(i, y, DEBUG_BACKGROUND_HORIZONTAL);
             }
         }
@@ -115,14 +96,14 @@ public class PanelAnalyzer {
         int minTierHeight = (int) (height * MIN_TIER_HEIGHT);
 
         Point tierStart = null;
-        for (int y = 0; y <= height; y++) {
+        for (int y = DEFAULT_PAGE_MARGIN; y <= height; y++) {
             // For-loop extends beyond bitmap boundary, to add an artificial whiteline at the end.
             // (for comics with no margins)
             boolean fullyWhite = true;
             if (y < height) {
-                int x = 0;
-                while (x < width) {
-                    @ColorInt int color1 = bitmap.getPixel(x > 5 ? x - 5 : 0, y);
+                int x = DEFAULT_PAGE_MARGIN;
+                while (x < width - DEFAULT_PAGE_MARGIN) {
+                    @ColorInt int color1 = bitmap.getPixel(x > DEFAULT_PAGE_MARGIN + 5 ? x - 5 : DEFAULT_PAGE_MARGIN, y);
                     @ColorInt int color2 = bitmap.getPixel(x, y);
                     if (isHighGradient(color1, color2, MAX_GRADIENT)) {
                         fullyWhite = false;
@@ -142,7 +123,7 @@ public class PanelAnalyzer {
                 }
             } else if (!fullyWhite && tierStart == null) {
                 // We have the start of a new panel
-                tierStart = new Point(0, y);
+                tierStart = new Point(DEFAULT_PAGE_MARGIN, y == DEFAULT_PAGE_MARGIN ? 0 : y);
             }
         }
 
@@ -168,7 +149,8 @@ public class PanelAnalyzer {
                 // (for comics without margin)
                 if (x < rowPanel.right) {
                     int y = rowPanel.top;
-                    while (y < rowPanel.bottom) {
+                    int yThreshold = Math.min(rowPanel.bottom, height - DEFAULT_PAGE_MARGIN);
+                    while (y < yThreshold) {
                         @ColorInt int color1 = bitmap.getPixel(x, y > rowPanel.top + 5 ? y - 5 : rowPanel.top);
                         @ColorInt int color2 = bitmap.getPixel(x, y);
                         if (isHighGradient(color1, color2, MAX_GRADIENT)) {
@@ -189,7 +171,7 @@ public class PanelAnalyzer {
                     }
                 } else if (!fullyWhite && panelStart == null) {
                     // We have the start of a new panel
-                    panelStart = new Point(x, rowPanel.top);
+                    panelStart = new Point(x == DEFAULT_PAGE_MARGIN ? 0 : x, rowPanel.top);
                 }
             }
         }
@@ -200,7 +182,7 @@ public class PanelAnalyzer {
             debugPaint.setStrokeWidth(4);
             debugPaint.setStyle(Paint.Style.STROKE);
 
-            for(int i = 0; i < panels.size(); i++) {
+            for (int i = 0; i < panels.size(); i++) {
                 debugPaint.setColor(DEBUG_COLORS[i % DEBUG_COLORS.length]);
                 debugCanvas.drawRect(panels.get(i), debugPaint);
             }
