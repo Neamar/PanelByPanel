@@ -208,6 +208,11 @@ public class PanelAnalyzerTest {
     }
 
     @Test
+    public void scanWithNoise2() throws Exception {
+        testResource("asterix_obelix_legionary", fr.neamar.panelbypanel.test.R.drawable.asterix_obelix_legionary, new int[]{1, 2, 2});
+    }
+
+    @Test
     public void blackAndWhiteComicNoTopBottomMarginOverflowingText() throws Exception {
         testResource("eiichiro_oda_one_piece", fr.neamar.panelbypanel.test.R.drawable.eiichiro_oda_one_piece, new int[]{2, 1, 2});
     }
