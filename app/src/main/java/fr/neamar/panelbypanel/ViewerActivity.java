@@ -32,7 +32,7 @@ public class ViewerActivity extends AppCompatActivity {
         options.inMutable = DEBUG;
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample, options);
-        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, true);
+        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, false);
         panels = panelAnalyzer.getPanels();
         // panelAnalyzer.colorizeBackground();
 

@@ -26,7 +26,7 @@ public class PanelAnalyzer {
     private static final int DEBUG_BACKGROUND_VERTICAL = Color.rgb(255, 0, 128);
 
     // Minimum height (%) for a tier
-    private static final float MIN_TIER_HEIGHT = 0.1f;
+    private static final float MIN_TIER_HEIGHT = 0.05f;
 
     // Minimum width (%) for a panel
     private static final float MIN_PANEL_WIDTH = 0.1f;
@@ -123,7 +123,7 @@ public class PanelAnalyzer {
                 }
             } else if (!fullyWhite && tierStart == null) {
                 // We have the start of a new panel
-                tierStart = new Point(DEFAULT_PAGE_MARGIN, y == DEFAULT_PAGE_MARGIN ? 0 : y);
+                tierStart = new Point(DEFAULT_PAGE_MARGIN, y);
             }
         }
 
@@ -134,9 +134,6 @@ public class PanelAnalyzer {
 
     // Vertical gutter detection
     public ArrayList<Rect> getPanels() {
-        Canvas debugCanvas = null;
-        Paint debugPaint = null;
-
         ArrayList<Rect> tiers = getTiers();
         ArrayList<Rect> panels = new ArrayList<>();
 
@@ -177,8 +174,8 @@ public class PanelAnalyzer {
         }
 
         if (debug) {
-            debugCanvas = new Canvas(bitmap);
-            debugPaint = new Paint();
+            Canvas debugCanvas = new Canvas(bitmap);
+            Paint debugPaint = new Paint();
             debugPaint.setStrokeWidth(4);
             debugPaint.setStyle(Paint.Style.STROKE);
 

@@ -209,7 +209,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void blackAndWhiteComicNoTopBottomMarginOverflowingText() throws Exception {
-        testResource("eiichiro_oda_one_piece", fr.neamar.panelbypanel.test.R.drawable.eiichiro_oda_one_piece, new int[]{3, 1, 2});
+        testResource("eiichiro_oda_one_piece", fr.neamar.panelbypanel.test.R.drawable.eiichiro_oda_one_piece, new int[]{2, 1, 2});
     }
 
     @Test
@@ -219,7 +219,7 @@ public class PanelAnalyzerTest {
 
     @Test
     public void complexLayoutWhiteMargin() throws Exception {
-        testResource("dorison_bec_sanctuaire_vol_2", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_2, new int[]{3, 2, 3});
+        testResource("dorison_bec_sanctuaire_vol_2", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_2, new int[]{3, 2, 2});
     }
 
     @Test
