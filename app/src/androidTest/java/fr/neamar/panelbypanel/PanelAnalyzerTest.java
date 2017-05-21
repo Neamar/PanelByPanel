@@ -231,9 +231,4 @@ public class PanelAnalyzerTest {
     public void noMarginBackground() throws Exception {
         testResource("nebezial_death_vigil", fr.neamar.panelbypanel.test.R.drawable.nebezial_death_vigil, new int[]{1, 4, 1, 1, 1, 4});
     }
-
-    @Test
-    public void complexNonUniformBackground() throws Exception {
-        testResource("shiniez_sunstone", fr.neamar.panelbypanel.test.R.drawable.shiniez_sunstone, new int[]{1, 1, 1, 1, 5});
-    }
 }
