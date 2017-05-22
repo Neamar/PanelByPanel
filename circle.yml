@@ -17,14 +17,17 @@ test:
     - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
-  override:
-    - fb-adb start-server:
+    - adb logcat -v threadtime > logs.txt:
         background: true
+  override:
     - ./gradlew test assembleDebug assembleDebugAndroidTest --console=plain
     # wait for the emulator to have booted
     - circle-android wait-for-boot
+    # store logs
     - ./gradlew connectedAndroidTest --console=plain
   post:
+    - node logs-to-bitmap.js logs.txt
+    - cp -r test_errors $CIRCLE_ARTIFACTS
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
     # copy the test results to the test results directory.
     - find app/build/test-results -name "*.xml" -exec cp {} $CIRCLE_TEST_REPORTS/ \;
