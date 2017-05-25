@@ -27,4 +27,9 @@ public class SampleBook implements Book {
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.sample, options);
         return bitmap;
     }
+
+    @Override
+    public void closeBook() {
+
+    }
 }

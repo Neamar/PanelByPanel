@@ -4,14 +4,16 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.comic.Book;
-import fr.neamar.panelbypanel.comic.SampleBook;
+import fr.neamar.panelbypanel.comic.PdfBook;
 import fr.neamar.panelbypanel.panel.PanelAnalyzer;
 
 import static fr.neamar.panelbypanel.R.id.page;
@@ -35,7 +37,13 @@ public class ViewerActivity extends AppCompatActivity {
 
         panelImageView = (PanelImageView) findViewById(page);
 
-        loadBook(new SampleBook(getResources(), DEBUG));
+        Book book = null;
+        try {
+            book = new PdfBook(this);
+            loadBook(book);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         panelImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +53,7 @@ public class ViewerActivity extends AppCompatActivity {
         });
     }
 
-    protected void loadBook(Book book) {
+    protected void loadBook(@NonNull Book book) {
         currentBook = book;
         currentPageNumber = 0;
         currentPanelNumber = 0;
@@ -60,6 +68,7 @@ public class ViewerActivity extends AppCompatActivity {
             throw new RuntimeException("You've reached the end of the book");
         }
 
+        Log.i(TAG, "Moving to page #" + currentPageNumber);
         Bitmap bitmap = currentBook.getPage(currentPageNumber);
         currentPanelNumber = 0;
         PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, true);
@@ -73,7 +82,7 @@ public class ViewerActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                moveToNextPanel();
+                moveToPanel();
             }
         }, 100);
     }
@@ -101,7 +110,7 @@ public class ViewerActivity extends AppCompatActivity {
         }
 
         Rect panel = panels.get(currentPanelNumber);
-        Log.i(TAG, "Moving to " + panel);
+        Log.i(TAG, "Moving to panel " + panel + ", page " + currentPageNumber);
         panelImageView.goToPanel(panel);
     }
 }
