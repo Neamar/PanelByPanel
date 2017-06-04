@@ -127,8 +127,6 @@ public class PanelAnalyzer {
             }
         }
 
-        Log.e(TAG, rowPanels.toString());
-
         return rowPanels;
     }
 

@@ -24,7 +24,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         style="?android:attr/buttonStyleSmall"
-        android:text="<" />
+        android:text="@string/previous" />
 
     <Button
         android:id="@+id/nextButton"
@@ -33,11 +33,10 @@
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/prevButton"
         style="?android:attr/buttonStyleSmall"
-        android:text=">" />
+        android:text="@string/next" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+    <SeekBar
+        android:id="@+id/seekBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/page"
