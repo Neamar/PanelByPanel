@@ -49,7 +49,12 @@ public class ViewerActivity extends AppCompatActivity {
         Book book;
         try {
             book = new PdfBook(this);
-            loadBook(book);
+            if(savedInstanceState != null) {
+                loadBook(book, savedInstanceState.getInt("currentPageNumber", 0), savedInstanceState.getInt("currentPanelNumber", 0));
+            }
+            else {
+                loadBook(book, 0, 0);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,11 +84,14 @@ public class ViewerActivity extends AppCompatActivity {
         // But in a smooth way to avoid overwhelming the CPU
         // so we implement a message queue, and wait for 300ms before doing anything.
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            private boolean isTouching = false;
             @Override
             public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
                 if (!fromUser) {
                     return;
                 }
+
+                Log.e(TAG, "TOUCH" + isTouching);
 
                 if (scrollRunnable != null) {
                     scrollHandler.removeCallbacks(scrollRunnable);
@@ -102,12 +110,13 @@ public class ViewerActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                isTouching = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                isTouching = false;
+                // onProgressChanged(seekBar, seekBar.getProgress(), false);
             }
         });
 
@@ -126,10 +135,10 @@ public class ViewerActivity extends AppCompatActivity {
         });
     }
 
-    protected void loadBook(@NonNull Book book) {
+    protected void loadBook(@NonNull Book book, int pageNumber, int panelNumber) {
         currentBook = book;
-        currentPageNumber = 0;
-        currentPanelNumber = 0;
+        currentPageNumber = pageNumber;
+        currentPanelNumber = panelNumber;
 
         seekBar.setMax(book.getPageCount() - 1);
 
@@ -214,5 +223,15 @@ public class ViewerActivity extends AppCompatActivity {
         Rect panel = panels.get(currentPanelNumber);
         Log.i(TAG, "Moving to panel " + panel + ", page " + currentPageNumber);
         panelImageView.goToPanel(panel);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(currentBook != null) {
+            outState.putInt("currentPageNumber", currentPageNumber);
+            outState.putInt("currentPanelNumber", currentPanelNumber);
+        }
+
+        super.onSaveInstanceState(outState);
     }
 }
