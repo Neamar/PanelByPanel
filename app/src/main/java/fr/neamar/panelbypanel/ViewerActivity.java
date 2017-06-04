@@ -121,12 +121,14 @@ public class ViewerActivity extends AppCompatActivity {
     protected void loadBook(@NonNull Book book, int pageNumber, int panelNumber) {
         currentBook = book;
         currentPageNumber = pageNumber;
-        currentPanelNumber = panelNumber;
 
         seekBar.setMax(book.getPageCount() - 1);
 
         setTitle(book.getTitle());
         moveToPage();
+
+        currentPanelNumber = panelNumber;
+        moveToPanel();
     }
 
     /**
