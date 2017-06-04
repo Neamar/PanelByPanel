@@ -219,4 +219,13 @@ public class ViewerActivity extends AppCompatActivity {
 
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    protected void onStop() {
+        if(currentBook != null) {
+            currentBook.closeBook();
+        }
+
+        super.onStop();
+    }
 }
