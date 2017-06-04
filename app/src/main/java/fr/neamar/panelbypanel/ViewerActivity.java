@@ -1,6 +1,5 @@
 package fr.neamar.panelbypanel;
 
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,8 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.comic.Book;
+import fr.neamar.panelbypanel.comic.Page;
 import fr.neamar.panelbypanel.comic.PdfBook;
-import fr.neamar.panelbypanel.panel.PanelAnalyzer;
 
 import static fr.neamar.panelbypanel.R.id.page;
 
@@ -90,15 +89,16 @@ public class ViewerActivity extends AppCompatActivity {
         }
 
         Log.i(TAG, "Moving to page #" + currentPageNumber);
-        Bitmap bitmap = currentBook.getPage(currentPageNumber);
+        Page page = currentBook.getPage(currentPageNumber);
         currentPanelNumber = 0;
-        PanelAnalyzer panelAnalyzer = new PanelAnalyzer(bitmap, true);
-        panels = panelAnalyzer.getPanels();
-        // panelAnalyzer.colorizeBackground();
+        panels = page.panels;
 
-        panelImageView.setImageBitmap(bitmap);
+        panelImageView.setImageBitmap(page.bitmap);
 
-        // Move to first panel
+        // display the full page
+        panelImageView.goToPanel(new Rect(0, 0, page.bitmap.getWidth(), page.bitmap.getHeight()));
+
+        // And move to first panel after a small delay
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -131,6 +131,8 @@ public class ViewerActivity extends AppCompatActivity {
             if(currentPageNumber > 0) {
                 currentPageNumber -= 1;
                 moveToPage();
+                currentPanelNumber = panels.size() - 1;
+                moveToPanel();
             }
             else {
                 currentPanelNumber = 0;

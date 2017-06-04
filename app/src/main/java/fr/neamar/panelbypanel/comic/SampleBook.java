@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 
 import fr.neamar.panelbypanel.R;
 
-public class SampleBook implements Book {
+public class SampleBook extends Book {
     private boolean debug = false;
     private Resources resources;
 
@@ -20,7 +20,7 @@ public class SampleBook implements Book {
     }
 
     @Override
-    public Bitmap getPage(int i) {
+    public Bitmap getPageBitmap(int i) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = debug;
 

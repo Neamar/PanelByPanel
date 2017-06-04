@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class PdfBook implements Book {
+public class PdfBook extends Book {
     /**
      * File descriptor of the PDF.
      */
@@ -61,7 +61,7 @@ public class PdfBook implements Book {
     }
 
     @Override
-    public Bitmap getPage(int page) {
+    public Bitmap getPageBitmap(int page) {
         // Make sure to close the current page before opening another one.
         if (null != mCurrentPage) {
             mCurrentPage.close();
