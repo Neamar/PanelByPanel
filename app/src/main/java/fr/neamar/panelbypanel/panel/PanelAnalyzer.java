@@ -118,7 +118,7 @@ public class PanelAnalyzer {
                 if (y - tierStart.y > minTierHeight) {
                     // We have a white line, stop the panel here
                     rowPanels.add(new Rect(tierStart.x, tierStart.y, width, y));
-                    Log.i(TAG, "Adding tier from " + tierStart.y + " to " + y);
+                    Log.d(TAG, "Adding tier from " + tierStart.y + " to " + y);
                     tierStart = null;
                 }
             } else if (!fullyWhite && tierStart == null) {
@@ -163,7 +163,7 @@ public class PanelAnalyzer {
                         // We have a white line, stop the panel here
                         Rect rect = new Rect(panelStart.x, panelStart.y, x, rowPanel.bottom);
                         panels.add(rect);
-                        Log.i(TAG, "Adding panel at " + rect.toString());
+                        Log.d(TAG, "Adding panel at " + rect.toString());
                         panelStart = null;
                     }
                 } else if (!fullyWhite && panelStart == null) {

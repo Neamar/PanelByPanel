@@ -17,3 +17,5 @@ local.properties
 npm-debug.log
 
 test_errors/*.jpg
+
+app/src/main/assets/sample.pdf
