@@ -34,10 +34,6 @@ public class ViewerActivity extends AppCompatActivity {
 
     private int lastTouchCoordinateX;
 
-    private Handler scrollHandler = new Handler();
-    private Runnable scrollRunnable;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +45,9 @@ public class ViewerActivity extends AppCompatActivity {
         Book book;
         try {
             book = new PdfBook(this);
-            if(savedInstanceState != null) {
+            if (savedInstanceState != null) {
                 loadBook(book, savedInstanceState.getInt("currentPageNumber", 0), savedInstanceState.getInt("currentPanelNumber", 0));
-            }
-            else {
+            } else {
                 loadBook(book, 0, 0);
             }
         } catch (IOException e) {
@@ -85,27 +80,15 @@ public class ViewerActivity extends AppCompatActivity {
         // so we implement a message queue, and wait for 300ms before doing anything.
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             private boolean isTouching = false;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
-                if (!fromUser) {
+                if (!fromUser || isTouching) {
                     return;
                 }
 
-                Log.e(TAG, "TOUCH" + isTouching);
-
-                if (scrollRunnable != null) {
-                    scrollHandler.removeCallbacks(scrollRunnable);
-                }
-
-                scrollRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        currentPageNumber = progress;
-                        moveToPage();
-                    }
-                };
-
-                scrollHandler.postDelayed(scrollRunnable, 300);
+                currentPageNumber = progress;
+                moveToPage();
             }
 
             @Override
@@ -116,7 +99,7 @@ public class ViewerActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 isTouching = false;
-                // onProgressChanged(seekBar, seekBar.getProgress(), false);
+                onProgressChanged(seekBar, seekBar.getProgress(), true);
             }
         });
 
@@ -227,7 +210,7 @@ public class ViewerActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if(currentBook != null) {
+        if (currentBook != null) {
             outState.putInt("currentPageNumber", currentPageNumber);
             outState.putInt("currentPanelNumber", currentPanelNumber);
         }
