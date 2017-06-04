@@ -51,6 +51,11 @@ public class PdfBook implements Book {
     }
 
     @Override
+    public String getTitle() {
+        return "Sample PDF";
+    }
+
+    @Override
     public int getPageCount() {
         return mPdfRenderer.getPageCount();
     }

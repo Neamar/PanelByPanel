@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
  */
 
 public interface Book {
+    public String getTitle();
     public int getPageCount();
     public Bitmap getPage(int page);
     public void closeBook();

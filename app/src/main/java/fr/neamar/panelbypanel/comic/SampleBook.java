@@ -32,4 +32,9 @@ public class SampleBook implements Book {
     public void closeBook() {
 
     }
+
+    @Override
+    public String getTitle() {
+        return "Sample debug image";
+    }
 }
