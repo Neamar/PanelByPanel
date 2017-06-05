@@ -30,7 +30,7 @@ public class PdfBook extends Book {
     public PdfBook(Context context) throws IOException {
         // In this sample, we read a PDF from the assets directory.
         File file = new File(context.getCacheDir(), "sample.pdf");
-        if (!file.exists()) {
+        if (true || !file.exists()) {
             // Since PdfRenderer cannot handle the compressed asset file directly, we copy it into
             // the cache directory.
             InputStream asset = context.getAssets().open("sample.pdf");
