@@ -34,14 +34,16 @@ public class PanelAnalyzer {
     // Minimum gradient, over the three channels, to consider a pixel as an edge
     private static final int MAX_GRADIENT = 50;
 
-    // Pixels to skip at the top and the left, to avoid potential black border or scan lines
-    private static final int DEFAULT_PAGE_MARGIN = 5;
+    // Percentage of pixels to skip at the top and the left, to avoid potential black border or scan lines
+    private static final float DEFAULT_PAGE_MARGIN = .02f;
 
     // Bitmap to use for computations
     private Bitmap bitmap;
 
     private int width;
     private int height;
+    private int defaultPageMarginHeight;
+    private int defaultPageMarginWidth;
 
     private boolean debug;
 
@@ -49,6 +51,8 @@ public class PanelAnalyzer {
         this.bitmap = bitmap;
         this.width = bitmap.getWidth();
         this.height = bitmap.getHeight();
+        defaultPageMarginHeight = (int) (DEFAULT_PAGE_MARGIN * height);
+        defaultPageMarginWidth = (int) (DEFAULT_PAGE_MARGIN * height);
         this.debug = debug;
     }
 
@@ -72,23 +76,6 @@ public class PanelAnalyzer {
         return Math.abs(r1 - r2) > threshold || Math.abs(g1 - g2) > threshold || Math.abs(b1 - b2) > threshold;
     }
 
-    public void colorizeBackground() {
-        for (int y = DEFAULT_PAGE_MARGIN; y < height - DEFAULT_PAGE_MARGIN; y++) {
-            int x;
-            for (x = DEFAULT_PAGE_MARGIN; x < width - DEFAULT_PAGE_MARGIN; x++) {
-                @ColorInt int color1 = bitmap.getPixel(x > DEFAULT_PAGE_MARGIN + 5 ? x - 5 : DEFAULT_PAGE_MARGIN, y);
-                @ColorInt int color2 = bitmap.getPixel(x, y);
-                if (isHighGradient(color1, color2, MAX_GRADIENT)) {
-                    break;
-                }
-            }
-
-            for (int i = 0; i < x; i++) {
-                bitmap.setPixel(i, y, DEBUG_BACKGROUND_HORIZONTAL);
-            }
-        }
-    }
-
     // Horizontal gutter detection
     public ArrayList<Rect> getTiers() {
         ArrayList<Rect> rowPanels = new ArrayList<>();
@@ -96,14 +83,14 @@ public class PanelAnalyzer {
         int minTierHeight = (int) (height * MIN_TIER_HEIGHT);
 
         Point tierStart = null;
-        for (int y = DEFAULT_PAGE_MARGIN; y <= height; y++) {
+        for (int y = defaultPageMarginHeight; y <= height; y++) {
             // For-loop extends beyond bitmap boundary, to add an artificial whiteline at the end.
             // (for comics with no margins)
             boolean fullyWhite = true;
             if (y < height) {
-                int x = DEFAULT_PAGE_MARGIN;
-                while (x < width - DEFAULT_PAGE_MARGIN) {
-                    @ColorInt int color1 = bitmap.getPixel(x > DEFAULT_PAGE_MARGIN + 5 ? x - 5 : DEFAULT_PAGE_MARGIN, y);
+                int x = defaultPageMarginWidth;
+                while (x < width - defaultPageMarginWidth) {
+                    @ColorInt int color1 = bitmap.getPixel(x > defaultPageMarginWidth + 5 ? x - 5 : defaultPageMarginWidth, y);
                     @ColorInt int color2 = bitmap.getPixel(x, y);
                     if (isHighGradient(color1, color2, MAX_GRADIENT)) {
                         fullyWhite = false;
@@ -123,7 +110,7 @@ public class PanelAnalyzer {
                 }
             } else if (!fullyWhite && tierStart == null) {
                 // We have the start of a new panel
-                tierStart = new Point(DEFAULT_PAGE_MARGIN, y);
+                tierStart = new Point(defaultPageMarginWidth, y);
             }
         }
 
@@ -144,7 +131,7 @@ public class PanelAnalyzer {
                 // (for comics without margin)
                 if (x < rowPanel.right) {
                     int y = rowPanel.top;
-                    int yThreshold = Math.min(rowPanel.bottom, height - DEFAULT_PAGE_MARGIN);
+                    int yThreshold = Math.min(rowPanel.bottom, height - defaultPageMarginHeight);
                     while (y < yThreshold) {
                         @ColorInt int color1 = bitmap.getPixel(x, y > rowPanel.top + 5 ? y - 5 : rowPanel.top);
                         @ColorInt int color2 = bitmap.getPixel(x, y);
@@ -166,7 +153,7 @@ public class PanelAnalyzer {
                     }
                 } else if (!fullyWhite && panelStart == null) {
                     // We have the start of a new panel
-                    panelStart = new Point(x == DEFAULT_PAGE_MARGIN ? 0 : x, rowPanel.top);
+                    panelStart = new Point(x == defaultPageMarginWidth ? 0 : x, rowPanel.top);
                 }
             }
         }

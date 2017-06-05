@@ -169,6 +169,11 @@ public class PanelAnalyzerTest {
     }
 
     @Test
+    public void simpleComicWhiteMargin7() throws Exception {
+        testResource("bajram_universal_war_one", fr.neamar.panelbypanel.test.R.drawable.bajram_universal_war_one, new int[]{4, 1, 4});
+    }
+
+    @Test
     public void simpleComicWhiteMarginCompleteBlackBorderAroundPage() throws Exception {
         testResource("peyo_schtroumpfs", fr.neamar.panelbypanel.test.R.drawable.peyo_schtroumpfs, new int[]{2, 3, 3, 4});
     }
@@ -209,6 +214,11 @@ public class PanelAnalyzerTest {
     }
 
     @Test
+    public void hardScanLineOnLeft() throws Exception {
+        testResource("don_rosa_son_of_the_sun", fr.neamar.panelbypanel.test.R.drawable.don_rosa_son_of_the_sun, new int[]{1, 2, 2});
+    }
+
+    @Test
     public void scanWithNoise() throws Exception {
         testResource("don_rosa_mythological_menagerie", fr.neamar.panelbypanel.test.R.drawable.don_rosa_mythological_menagerie, new int[]{2, 2, 2, 2});
     }
@@ -231,10 +241,5 @@ public class PanelAnalyzerTest {
     @Test
     public void complexLayoutWhiteMargin() throws Exception {
         testResource("dorison_bec_sanctuaire_vol_2", fr.neamar.panelbypanel.test.R.drawable.dorison_bec_sanctuaire_vol_2, new int[]{3, 2, 2});
-    }
-
-    @Test
-    public void universalWarOneTest() throws Exception {
-        testResource("bajram_universal_war_one", fr.neamar.panelbypanel.test.R.drawable.bajram_universal_war_one, new int[]{4, 1, 4});
     }
 }
