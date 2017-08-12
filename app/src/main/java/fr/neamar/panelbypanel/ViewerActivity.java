@@ -12,6 +12,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import fr.neamar.panelbypanel.comic.Book;
@@ -44,7 +45,8 @@ public class ViewerActivity extends AppCompatActivity {
 
         Book book;
         try {
-            book = new PdfBook(this);
+            InputStream inputStream = getContentResolver().openInputStream(getIntent().getData());
+            book = new PdfBook(this, inputStream);
             if (savedInstanceState != null) {
                 loadBook(book, savedInstanceState.getInt("currentPageNumber", 0), savedInstanceState.getInt("currentPanelNumber", 0));
             } else {

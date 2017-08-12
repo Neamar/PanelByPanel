@@ -27,22 +27,21 @@ public class PdfBook extends Book {
      */
     private PdfRenderer.Page mCurrentPage;
 
-    public PdfBook(Context context) throws IOException {
+    public PdfBook(Context context, InputStream inputStream) throws IOException {
         // In this sample, we read a PDF from the assets directory.
-        File file = new File(context.getCacheDir(), "sample.pdf");
-        if (true || !file.exists()) {
-            // Since PdfRenderer cannot handle the compressed asset file directly, we copy it into
-            // the cache directory.
-            InputStream asset = context.getAssets().open("sample.pdf");
-            FileOutputStream output = new FileOutputStream(file);
-            final byte[] buffer = new byte[1024];
-            int size;
-            while ((size = asset.read(buffer)) != -1) {
-                output.write(buffer, 0, size);
-            }
-            asset.close();
-            output.close();
+
+        File file = new File(context.getCacheDir(), "book.pdf");
+        // Since PdfRenderer cannot handle the compressed asset file directly, we copy it into
+        // the cache directory.
+        FileOutputStream output = new FileOutputStream(file);
+        final byte[] buffer = new byte[1024];
+        int size;
+        while ((size = inputStream.read(buffer)) != -1) {
+            output.write(buffer, 0, size);
         }
+        inputStream.close();
+        output.close();
+
         mFileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
         // This is the PdfRenderer we use to render the PDF.
         if (mFileDescriptor != null) {
@@ -69,7 +68,7 @@ public class PdfBook extends Book {
         // Use `openPage` to open a specific page in PDF.
         mCurrentPage = mPdfRenderer.openPage(page);
         // Important: the destination bitmap must be ARGB (not RGB).
-        Bitmap bitmap = Bitmap.createBitmap(mCurrentPage.getWidth(), mCurrentPage.getHeight(),
+        Bitmap bitmap = Bitmap.createBitmap(mCurrentPage.getWidth() * 2, mCurrentPage.getHeight() * 2,
                 Bitmap.Config.ARGB_8888);
         // Here, we render the page onto the Bitmap.
         // To render a portion of the page, use the second and third parameter. Pass nulls to get
@@ -88,8 +87,7 @@ public class PdfBook extends Book {
             }
             mPdfRenderer.close();
             mFileDescriptor.close();
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
