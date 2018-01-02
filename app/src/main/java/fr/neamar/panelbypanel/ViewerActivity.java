@@ -43,6 +43,7 @@ public class ViewerActivity extends AppCompatActivity {
         panelImageView = (PanelImageView) findViewById(R.id.page);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
 
+        getSupportActionBar().hide();
         Book book;
         try {
             InputStream inputStream = getContentResolver().openInputStream(getIntent().getData());
